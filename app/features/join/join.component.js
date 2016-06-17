@@ -1,17 +1,24 @@
-
 'use strict';
 
 angular
   .module('monikersApp')
-  .controller('JoinController', JoinController);
+  .component('joinRoom', joinRoom());
 
-JoinController.$inject = ['$state'];
+function joinRoom() {
+  var component = {
+    templateUrl: '/features/join/join.component.html',
+    controller: JoinRoomController
+  };
 
-function JoinController($state) {
+  return component;
+}
+
+JoinRoomController.$inject = ['$state'];
+
+function JoinRoomController($state) {
   var vm = this;
 
-  vm.form = {roomCode: '', userName: ''};
-
+  vm.form = { roomCode: '', userName: '' };
   vm.joinRoom = joinRoom;
 
   function joinRoom() {

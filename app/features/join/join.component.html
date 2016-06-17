@@ -1,16 +1,16 @@
-<form ng-submit="joinVm.joinRoom()">
+<form ng-submit="$ctrl.joinRoom()">
   <h4 style="margin: 0;">Joining a game...</h4>
   <md-input-container>
     <label>What's the room code?</label>
-    <input type="text" ng-model="joinVm.form.roomCode" autofocus/>
+    <input type="text" ng-model="$ctrl.form.roomCode" autofocus/>
   </md-input-container>
 
   <md-input-container>
     <label>What's your name?</label>
-    <input type="text" ng-model="joinVm.form.userName" />
+    <input type="text" ng-model="$ctrl.form.userName" />
   </md-input-container>
 
-  <md-button class="md-raised md-primary" ng-click="joinVm.joinRoom()">
+  <md-button class="md-raised md-primary" ng-click="$ctrl.joinRoom()">
     Join
   </md-button>
 </form>

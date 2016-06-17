@@ -1,18 +1,18 @@
 <div layout="column">
   <div flex>
     <md-content layout-gt-sm="column" layout-padding>
-      <form ng-submit="createVm.createGame()">
+      <form ng-submit="$ctrl.createGame()">
         <h4 style="margin: 0;">Creating a game...</h4>
         <md-input-container>
           <label>What's your name?</label>
-          <input ng-model="createVm.user.name">
-          <md-button class="md-raised md-primary" ng-click="createVm.createGame()">
+          <input ng-model="$ctrl.user.name">
+          <md-button class="md-raised md-primary" ng-click="$ctrl.createGame()" ng-disabled="$ctrl.isLoading">
             Create
           </md-button>
         </md-input-container>
       </form>
     </md-content>
-    <md-button href="/" class="md-raised">
+    <md-button href="/" class="md-raised" ng-disabled="$ctrl.isLoading">
       Back
     </md-button>
   </div>

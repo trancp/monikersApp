@@ -2,12 +2,12 @@
   "use strict";
   angular
     .module('monikersApp')
-    .component('header',header());
+    .component('header', header());
 
   function header() {
     const component = {
-      templateUrl : '../components/header/headerComponent.html',
-      controller : headerController
+      templateUrl: '../components/header/headerComponent.html',
+      controller: headerController
     };
 
     return component;
@@ -15,7 +15,7 @@
 
   headerController.$inject = [];
 
-  function headerController () {
+  function headerController() {
     const vm = this;
   }
 })();

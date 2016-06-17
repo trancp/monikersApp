@@ -21,21 +21,15 @@ angular
         })
         .state('create', {
           url: '/create',
-          templateUrl: '../views/create.html',
-          controller: 'CreateController',
-          controllerAs: 'createVm'
+          template: '<create-room></create-room>'
         })
         .state('join', {
           url: '/join',
-          templateUrl: '../views/join.html',
-          controller: 'JoinController',
-          controllerAs: 'joinVm'
+          template: '<join-room></join-room>'
         })
         .state('room', {
-          url: '/room',
-          templateUrl: '../views/join.html',
-          controller: 'RoomController',
-          controllerAs: 'roomVm'
+          url: '/room/:roomId?user',
+          template: '<room></room>'
         })
         .state('game', {
           url: '/game',
