@@ -66,10 +66,10 @@ function CreateRoomController($firebaseArray, $state, Ref, Rooms, Users) {
   function generateRoomCode (listOfRooms, codeLength) {
     var code = '';
     while ('' === code) {
-      for (let i = 0; i < codeLength; i++) {
+      for (var i = 0; i < codeLength; i++) {
         code += Math.floor((Math.random() * 10)).toString();
       }
-      for (let j=0; j < listOfRooms.length; j++) {
+      for (var j=0; j < listOfRooms.length; j++) {
         if(listOfRooms[j].code === code) {
           code = '';
           return;

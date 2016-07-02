@@ -29,11 +29,10 @@ function JoinRoomController($state, Rooms) {
     }
 
         Rooms.exists(vm.form.roomCode).then(function (roomExists) {
-            if (!roomExists) {
-                console.log('Room does not exist');
+            if (!roomExists.exists) {
                 return;
             }
-            _joinExistingRoom(vm.form.roomCode, vm.form.userName);
+            _joinExistingRoom(roomExists.roomId, vm.form.userName);
         });
     }
 
