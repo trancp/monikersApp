@@ -4,7 +4,7 @@
     angular
         .module('monikersApp')
         .component('game', game());
-    
+
     function game () {
         var component = {
             templateUrl : '/features/game/game.component.html',
@@ -12,9 +12,9 @@
         };
         return component;
     }
-    
+
     GameController.$inject = ['$stateParams', 'Rooms'];
-    
+
     function GameController($stateParams, Rooms) {
         var vm = this;
 
@@ -33,17 +33,21 @@
                 vm.room = obj;
             });
         }
-        
+
         function getWord () {
-            if(vm.room.words){
-                return _.values(vm.room.words)[vm.index].word;
+            if(vm.room.tempWords){
+                return _.values(vm.room.tempWords)[vm.index].word;
             }
         }
-        
+
         function nextWord () {
+          if (vm.index === _.values(vm.room.tempWords).length-1) {
+            vm.index = 0;
+            return;
+          }
             vm.index++;
         }
-        
+
     }
 
 })();
