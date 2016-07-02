@@ -1,31 +1,32 @@
 'use strict';
 
 angular
-    .module('monikersApp')
-    .component('joinRoom', joinRoom());
+  .module('monikersApp')
+  .component('joinRoom', joinRoom());
 
 function joinRoom() {
-    var component = {
-        templateUrl: '/features/join/join.component.html',
-        controller: JoinRoomController
-    };
+  var component = {
+    templateUrl: '/features/join/join.component.html',
+    controller: JoinRoomController
+  };
 
-    return component;
+  return component;
 }
 
 JoinRoomController.$inject = ['$state', 'Rooms'];
 
 function JoinRoomController($state, Rooms) {
-    var vm = this;
+  var vm = this;
 
     vm.form = {roomCode: '', userName: ''};
 
     vm.joinRoom = joinRoom;
 
-    function joinRoom() {
-        if (!vm.form.userName || !vm.form.roomCode) {
-            return;
-        }
+  function joinRoom() {
+
+    if (!vm.form.userName || !vm.form.roomCode){
+      return;
+    }
 
         Rooms.exists(vm.form.roomCode).then(function (roomExists) {
             if (!roomExists) {

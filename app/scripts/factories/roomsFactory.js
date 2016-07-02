@@ -53,24 +53,27 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     return deferred.promise;
   }
 
-  function exists(roomKey) {
+  function exists(roomCode) {
     var deferred = $q.defer();
+    const roomExists = { exists: false, roomId: '' };
     $firebaseArray(roomsRef).$loaded().then(function (listOfRooms) {
           for (var i=0; i < listOfRooms.length; i++) {
-            if(listOfRooms[i].$id == roomKey) {
-              deferred.resolve(true);
+            if(listOfRooms[i].roomCode == roomCode) {
+              roomExists.exists = true;
+              roomExists.roomId = listOfRooms[i].$id;
+              deferred.resolve(roomExists);
             }
           }
-      deferred.resolve(false);
+      deferred.resolve(roomExists);
     });
     return deferred.promise;
   }
 
-  function add() {
+  function add(roomCode) {
     var deferred = $q.defer();
 
     rooms
-      .$add({ created_at: new Date().getTime() })
+      .$add({ created_at: new Date().getTime(), roomCode: roomCode })
       .then(function (ref) {
         deferred.resolve(ref.key());
       });

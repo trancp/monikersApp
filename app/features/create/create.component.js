@@ -18,13 +18,16 @@ CreateRoomController.$inject = ['$firebaseArray', '$state', 'Ref', 'Rooms', 'Use
 
 function CreateRoomController($firebaseArray, $state, Ref, Rooms, Users) {
   var vm = this;
+  const roomCodeLength = 6;
 
   vm.user = {};
   vm.room = {};
+  vm.listOfRooms = [];
   vm.isLoading = false;
 
   vm.createGame = createGame;
   vm.roomCapacity = roomCapacity;
+  vm.generateRoomCode = generateRoomCode;
 
   function createGame() {
     if (!vm.user.name) {
@@ -33,9 +36,16 @@ function CreateRoomController($firebaseArray, $state, Ref, Rooms, Users) {
 
     vm.isLoading = true;
 
-    Rooms
-      .add()
-      .then(_addPlayerToRoom);
+    Rooms.all.$loaded().then( function (listOfRooms) {
+      if(roomCapacity(listOfRooms.length, roomCodeLength)){
+        return;
+      }
+      vm.room.code = generateRoomCode(listOfRooms, roomCodeLength);
+      Rooms
+        .add(vm.room.code)
+        .then(_addPlayerToRoom);
+    });
+
   }
 
   function _addPlayerToRoom(roomKey) {
@@ -51,6 +61,22 @@ function CreateRoomController($firebaseArray, $state, Ref, Rooms, Users) {
       console.log('No more rooms available');
       return true;
     }
+  }
+
+  function generateRoomCode (listOfRooms, codeLength) {
+    var code = '';
+    while ('' === code) {
+      for (let i = 0; i < codeLength; i++) {
+        code += Math.floor((Math.random() * 10)).toString();
+      }
+      for (let j=0; j < listOfRooms.length; j++) {
+        if(listOfRooms[j].code === code) {
+          code = '';
+          return;
+        }
+      }
+    }
+    return code;
   }
 }
 
