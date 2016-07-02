@@ -1,53 +1,46 @@
 'use strict';
 
 angular
-  .module('monikersApp')
-  .component('joinRoom', joinRoom());
+    .module('monikersApp')
+    .component('joinRoom', joinRoom());
 
 function joinRoom() {
-  var component = {
-    templateUrl: '/features/join/join.component.html',
-    controller: JoinRoomController
-  };
+    var component = {
+        templateUrl: '/features/join/join.component.html',
+        controller: JoinRoomController
+    };
 
-  return component;
+    return component;
 }
 
 JoinRoomController.$inject = ['$state', 'Rooms'];
 
 function JoinRoomController($state, Rooms) {
-  var vm = this;
+    var vm = this;
 
-  vm.form = { roomCode: '', userName: '' };
-  vm.joinRoom = joinRoom;
-  vm._joinExistingRoom = _joinExistingRoom;
-  vm._getRoom = _getRoom;
+    vm.form = {roomCode: '', userName: ''};
 
-  function joinRoom() {
+    vm.joinRoom = joinRoom;
 
-    if (!vm.form.userName || !vm.form.roomCode){
-      return;
+    function joinRoom() {
+        if (!vm.form.userName || !vm.form.roomCode) {
+            return;
+        }
+
+        Rooms.exists(vm.form.roomCode).then(function (roomExists) {
+            if (!roomExists) {
+                console.log('Room does not exist');
+                return;
+            }
+            _joinExistingRoom(vm.form.roomCode, vm.form.userName);
+        });
     }
 
-    Rooms.exists(vm.form.roomCode).then(function (roomExists) {
-      if(!roomExists) {
-        console.log('Room does not exist');
-        return;
-      }
-      _joinExistingRoom(vm.form.roomCode, vm.form.userName);
-    });
-  }
-
-  function _joinExistingRoom(roomKey, username) {
-    Rooms
-        .joinExistingRoom(roomKey, username)
-        .then(function (userKey) {
-          $state.go('room', { roomId: roomKey, user: username, userId: userKey });
-        });
-  }
-
-  function _getRoom(roomKey) {
-    return Rooms
-        .getRoom(roomKey);
-  }
+    function _joinExistingRoom(roomKey, username) {
+        Rooms
+            .joinExistingRoom(roomKey, username)
+            .then(function (userKey) {
+                $state.go('room', {roomId: roomKey, user: username, userId: userKey});
+            });
+    }
 }
