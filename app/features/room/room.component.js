@@ -70,6 +70,9 @@
         }
 
         function startGame() {
+            Rooms.updateGameStatus($stateParams.roomId, 'gameStarted', true);
+          console.log(vm.user);
+            Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'inGame', true);
             $state.go('game', { roomId: $stateParams.roomId, user: $stateParams.user, userId: $stateParams.userId });
         }
 

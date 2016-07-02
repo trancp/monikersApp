@@ -25,8 +25,9 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     switchTeams: switchTeams,
     removeFromCurrentTeam: removeFromCurrentTeam,
     addToNewTeam: addToNewTeam,
-    updatePlayersTeamStatus: updatePlayersTeamStatus,
+    updatePlayersStatus: updatePlayersStatus,
     getIndexId: getIndexId,
+    updateGameStatus: updateGameStatus,
     all: rooms
   };
 
@@ -73,7 +74,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     var deferred = $q.defer();
 
     rooms
-      .$add({ created_at: new Date().getTime(), roomCode: roomCode })
+      .$add({ created_at: new Date().getTime(), roomCode: roomCode, gameStatus: { gameStarted: false } })
       .then(function (ref) {
         deferred.resolve(ref.key());
       });
@@ -85,7 +86,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     var deferred = $q.defer();
 
     $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/players'))
-      .$add({ username: username , team: 'Team One'})
+      .$add({ username: username , team: 'Team One', inGame: false })
       .then(function (ref) {
         deferred.resolve(ref.key());
         addPlayerToTeam(roomKey, ref.key(), 'teamOne');
@@ -110,7 +111,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     var deferred = $q.defer();
 
     $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/players'))
-        .$add({ username: username, team: 'Team One'})
+        .$add({ username: username, team: 'Team One', inGame: false })
         .then(function (ref) {
           deferred.resolve(ref.key());
           addPlayerToTeam(roomKey, ref.key(), 'teamOne');
@@ -151,7 +152,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
   function switchTeams (roomKey, userId, currentTeam) {
     removeFromCurrentTeam(roomKey, userId, currentTeam);
     addToNewTeam(roomKey, userId, currentTeam);
-    updatePlayersTeamStatus(roomKey, userId, currentTeam);
+    updatePlayersStatus(roomKey, userId, 'team', currentTeam);
   }
 
   function removeFromCurrentTeam (roomKey, userId, currentTeam) {
@@ -169,10 +170,13 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     addPlayerToTeam(roomKey, userId, teamNum);
   }
 
-  function updatePlayersTeamStatus(roomKey, userId, currentTeam) {
-    const newTeamNum = currentTeam === 'Team One' ? 'Team Two' : 'Team One';
+  function updatePlayersStatus(roomKey, userId, field, statusChange) {
+    if (field === 'team') {
+      statusChange = statusChange === 'Team One' ? 'Team Two' : 'Team One';
+    }
+    console.log(FBURL+ 'rooms/' + roomKey + '/players/' + userId);
     $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/players/' + userId)).$loaded().then(function (player) {
-      player.team = newTeamNum;
+      player[field] = statusChange;
       player.$save();
     });
   }
@@ -185,6 +189,13 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     return deferred.promise;
 
 
+  }
+
+  function updateGameStatus (roomKey, field, statusChange) {
+    $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey)).$loaded().then(function (room) {
+      room.gameStatus[field] = statusChange;
+      room.$save();
+    });
   }
 
 }
