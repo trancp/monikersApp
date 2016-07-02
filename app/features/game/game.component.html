@@ -1,4 +1,12 @@
-<md-button ng-click="">
+<div>
+  ROUND: {{ $ctrl.room.gameStatus.round }}
+</div>
+<span>
+  <md-button class="md-primary" ng-click="$ctrl.nextRound()">
+    Next Round
+</md-button>
+</span>
+<md-button ng-click="$ctrl.gotIt()">
     Got it!
 </md-button>
 <h1> {{ $ctrl.getWord() }} </h1>

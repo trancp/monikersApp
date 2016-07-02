@@ -41,8 +41,8 @@
             vm.isLoading = true;
 
            Rooms.getRoom($stateParams.roomId).then(function(obj){
-                vm.room = obj;
-               vm.user = vm.room.players[$stateParams.userId];
+              vm.room = obj;
+              vm.user = vm.room.players[$stateParams.userId];
             });
         }
 
@@ -71,7 +71,6 @@
 
         function startGame() {
             Rooms.updateGameStatus($stateParams.roomId, 'gameStarted', true);
-          console.log(vm.user);
             Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'inGame', true);
             $state.go('game', { roomId: $stateParams.roomId, user: $stateParams.user, userId: $stateParams.userId });
         }
@@ -98,8 +97,7 @@
         }
 
         function isUser (playerIndex) {
-            var playerUsername = _.values(vm.room.players)[playerIndex].username;
-            return playerUsername == $stateParams.user;
+          return _.keys(vm.room.players)[playerIndex] === $stateParams.userId;
         }
     }
 })();

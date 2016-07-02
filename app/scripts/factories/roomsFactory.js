@@ -26,8 +26,8 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     removeFromCurrentTeam: removeFromCurrentTeam,
     addToNewTeam: addToNewTeam,
     updatePlayersStatus: updatePlayersStatus,
-    getIndexId: getIndexId,
     updateGameStatus: updateGameStatus,
+    nextRound: nextRound,
     all: rooms
   };
 
@@ -74,7 +74,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     var deferred = $q.defer();
 
     rooms
-      .$add({ created_at: new Date().getTime(), roomCode: roomCode, gameStatus: { gameStarted: false } })
+      .$add({ created_at: new Date().getTime(), roomCode: roomCode, gameStatus: { gameStarted: false, round: '1' } })
       .then(function (ref) {
         deferred.resolve(ref.key());
       });
@@ -127,22 +127,17 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         .$add({ word: newWord})
         .then(function (ref) {
           deferred.resolve(ref.key());
-          copyWordsArray(roomKey, newWord, ref.key());
+          copyWordsArray(roomKey);
         });
 
     return deferred.promise;
   }
 
-  function copyWordsArray(roomKey, newWord, wordKey) {
-    var deferred = $q.defer();
-
-    $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/words'))
-        .$add({ word: newWord, key: wordKey})
-        .then(function () {
-          deferred.resolve();
-        });
-
-    return deferred.promise;
+  function copyWordsArray(roomKey) {
+    $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey)).$loaded().then(function (room) {
+      room.words = room.tempWords;
+      room.$save();
+    });
   }
 
   function getTeamNumber (roomKey, userId) {
@@ -174,21 +169,10 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     if (field === 'team') {
       statusChange = statusChange === 'Team One' ? 'Team Two' : 'Team One';
     }
-    console.log(FBURL+ 'rooms/' + roomKey + '/players/' + userId);
     $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/players/' + userId)).$loaded().then(function (player) {
       player[field] = statusChange;
       player.$save();
     });
-  }
-
-  function getIndexId (roomKey, index) {
-    var deferred = $q.defer();
-    $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/players')).$loaded().then(function (listOfPlayers) {
-      deferred.resolve(listOfPlayers[index].$id);
-    });
-    return deferred.promise;
-
-
   }
 
   function updateGameStatus (roomKey, field, statusChange) {
@@ -198,4 +182,15 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     });
   }
 
+  function nextRound (roomKey, field, nextRoundNum) {
+    updateGameStatus(roomKey, field, nextRoundNum);
+    resetWords(roomKey);
+  }
+
+  function resetWords(roomKey) {
+    $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey)).$loaded().then(function (room) {
+      room.tempWords = room.words;
+      room.$save();
+    });
+  }
 }
