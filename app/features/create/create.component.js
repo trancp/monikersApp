@@ -38,11 +38,11 @@ function CreateRoomController($firebaseArray, $state, Ref, Rooms, Users) {
       .then(_addPlayerToRoom);
   }
 
-  function _addPlayerToRoom(roomIndex) {
+  function _addPlayerToRoom(roomKey) {
     Rooms
-      .addPlayer(roomIndex, vm.user.name)
-      .then(function () {
-        $state.go('room', { roomId: roomIndex, user: vm.user.name });
+      .addPlayer(roomKey, vm.user.name)
+      .then(function (userKey) {
+        $state.go('room', { roomId: roomKey, user: vm.user.name, userId: userKey });
       });
   }
 

@@ -28,14 +28,12 @@ angular
           template: '<join-room></join-room>'
         })
         .state('room', {
-          url: '/room/:roomId?user',
+          url: '/room/:roomId?user?userId',
           template: '<room></room>'
         })
         .state('game', {
-          url: '/game',
-          templateUrl: '../views/game.html',
-          controller: 'GameController',
-          controllerAs: 'gameVm'
+          url: '/game/:roomId?user?userId',
+          template: '<game></game>'
         });
 
       $urlRouterProvider.otherwise('/');

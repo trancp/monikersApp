@@ -13,34 +13,41 @@ function joinRoom() {
   return component;
 }
 
-JoinRoomController.$inject = ['$state'];
+JoinRoomController.$inject = ['$state', 'Rooms'];
 
-function JoinRoomController($state) {
+function JoinRoomController($state, Rooms) {
   var vm = this;
 
   vm.form = { roomCode: '', userName: '' };
   vm.joinRoom = joinRoom;
+  vm._joinExistingRoom = _joinExistingRoom;
+  vm._getRoom = _getRoom;
 
   function joinRoom() {
-    // var existingRoom = Rooms.findOne({code:  vm.getReactively('form.roomCode')});
-    //
-    // if (existingRoom) {
-    //   console.log('Joining ', vm.form.roomCode, ' as ', vm.form.userName);
-    //
-    //   var currentUser = {
-    //     userName: vm.form.userName,
-    //     roomId: existingRoom._id,
-    //     master: false
-    //   };
-    //   currentUser._id = Users.insert(currentUser);
-    //
-    //   userService.setModel(currentUser);
-    //   $state.go('/room');
-    //
-    //   vm.form = {roomCode: '', userName: ''};
-    //   return;
-    // }
 
-    console.log('Cant find room.');
+    if (!vm.form.userName || !vm.form.roomCode){
+      return;
+    }
+
+    Rooms.exists(vm.form.roomCode).then(function (roomExists) {
+      if(!roomExists) {
+        console.log('Room does not exist');
+        return;
+      }
+      _joinExistingRoom(vm.form.roomCode, vm.form.userName);
+    });
+  }
+
+  function _joinExistingRoom(roomKey, username) {
+    Rooms
+        .joinExistingRoom(roomKey, username)
+        .then(function (userKey) {
+          $state.go('room', { roomId: roomKey, user: username, userId: userKey });
+        });
+  }
+
+  function _getRoom(roomKey) {
+    return Rooms
+        .getRoom(roomKey);
   }
 }

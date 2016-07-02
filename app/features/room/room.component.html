@@ -1,1 +1,53 @@
-dsad
+<h1>{{ $ctrl.room.$id }}</h1>
+<md-list>
+    <md-subheader class="md-no-sticky">
+        <span>Players</span>
+    </md-subheader>
+    <div ng-repeat="player in $ctrl.room.players track by $index">
+        <span>
+            {{player.username }} <md-button ng-if="$ctrl.isUser($index)" ng-click="$ctrl.switchTeams()"> {{ $ctrl.team($index) }} </md-button> <span ng-if="!$ctrl.isUser($index)">{{ $ctrl.team($index) }}</span>
+                <!--<div ng-if="player.team =='Team One'"><md-button class="md-raised md-primary" ng-click="$ctrl.changeTeams()">Team One</md-button></div>-->
+                <!--<div ng-if="player.team =='Team two'"><md-button ng-click="$ctrl.changeTeams()">Team Two</md-button></div>-->
+        </span>
+    </div>
+</md-list>
+
+<form ng-submit="$ctrl.submitWords()" ng-if="!$ctrl.submitted">
+    <h4 style="margin: 0;">Submit 5 Words!</h4>
+    <li>
+        <md-input-container>
+            <label>1)</label>
+            <input type="text" ng-model="$ctrl.form.wordOne" autofocus/>
+        </md-input-container>
+
+        <md-input-container>
+            <label>2)</label>
+            <input type="text" ng-model="$ctrl.form.wordTwo" autofocus/>
+        </md-input-container>
+
+        <md-input-container>
+            <label>3)</label>
+            <input type="text" ng-model="$ctrl.form.wordThree" autofocus/>
+        </md-input-container>
+
+        <md-input-container>
+            <label>4)</label>
+            <input type="text" ng-model="$ctrl.form.wordFour" autofocus/>
+        </md-input-container>
+
+        <md-input-container>
+            <label>5)</label>
+            <input type="text" ng-model="$ctrl.form.wordFive" autofocus/>
+        </md-input-container>
+    </li>
+
+    <md-button class="md-raised md-primary" ng-click="$ctrl.submitWords()">
+        Submit
+    </md-button>
+</form>
+<div ng-if="$ctrl.submitted">You have submitted :)</div>
+<md-button ng-if="$ctrl.readyToStart()" class="md-raised md-primary" ng-click="$ctrl.startGame()">
+    Start
+</md-button>
+
+<a href="/">Back</a>
