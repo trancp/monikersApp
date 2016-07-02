@@ -17,12 +17,15 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     exists: exists,
     add: add,
     addPlayer: addPlayer,
-    addPlayerToTeamOne: addPlayerToTeamOne,
+    addPlayerToTeam: addPlayerToTeam,
     joinExistingRoom: joinExistingRoom,
     addWord: addWord,
     copyWordsArray: copyWordsArray,
     getTeamNumber: getTeamNumber,
     switchTeams: switchTeams,
+    removeFromCurrentTeam: removeFromCurrentTeam,
+    addToNewTeam: addToNewTeam,
+    updatePlayersTeamStatus: updatePlayersTeamStatus,
     getIndexId: getIndexId,
     all: rooms
   };
@@ -35,7 +38,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
 
   function getWords(roomKey, type) {
     var deferred = $q.defer();
-    
+
     type === 'temp' ? $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/tempWords')).$loaded().then(function (listOfWords) { deferred.resolve(listOfWords);})
         : $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/words')).$loaded().then(function (listOfWords) { deferred.resolve(listOfWords);});
 
@@ -82,17 +85,17 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
       .$add({ username: username , team: 'Team One'})
       .then(function (ref) {
         deferred.resolve(ref.key());
-        addPlayerToTeamOne(roomKey, username);
+        addPlayerToTeam(roomKey, ref.key(), 'teamOne');
       });
 
     return deferred.promise;
   }
 
-  function addPlayerToTeamOne(roomKey, username) {
+  function addPlayerToTeam(roomKey, userKey, teamNum) {
     var deferred = $q.defer();
 
-    $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/teams/teamOne'))
-        .$add({ username: username })
+    $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/teams/' + teamNum))
+        .$add({ userId: userKey })
         .then(function () {
           deferred.resolve();
         });
@@ -107,6 +110,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         .$add({ username: username, team: 'Team One'})
         .then(function (ref) {
           deferred.resolve(ref.key());
+          addPlayerToTeam(roomKey, ref.key(), 'teamOne');
         });
 
     return deferred.promise;
@@ -136,16 +140,38 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
 
     return deferred.promise;
   }
-  
+
   function getTeamNumber (roomKey, userId) {
     return $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/players/' + userId)).$loaded();
   }
 
-  function switchTeams (roomKey, userId, username, currentTeam) {
-   var player = $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/players/' + userId));
-    player.team = currentTeam == 'Team One' ? 'Team Two' : 'Team One';
-    player.username = username;
-    player.$save();
+  function switchTeams (roomKey, userId, currentTeam) {
+    removeFromCurrentTeam(roomKey, userId, currentTeam);
+    addToNewTeam(roomKey, userId, currentTeam);
+    updatePlayersTeamStatus(roomKey, userId, currentTeam);
+  }
+
+  function removeFromCurrentTeam (roomKey, userId, currentTeam) {
+    var teamNum = currentTeam === 'Team One' ? 'teamOne' : 'teamTwo';
+    $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/teams/' + teamNum)).$loaded().then(function (teams) {
+      const userSwitchingTeam =  _.findIndex(teams, function (teamMember) { return teamMember.userId === userId });
+      teams.$remove(teams[userSwitchingTeam]);
+    });
+
+  }
+
+  function addToNewTeam(roomKey, userId, currentTeam) {
+    const newTeamNum = currentTeam === 'Team One' ? 'Team Two' : 'Team One';
+    const teamNum = newTeamNum === 'Team One' ? 'teamOne' : 'teamTwo';
+    addPlayerToTeam(roomKey, userId, teamNum);
+  }
+
+  function updatePlayersTeamStatus(roomKey, userId, currentTeam) {
+    const newTeamNum = currentTeam === 'Team One' ? 'Team Two' : 'Team One';
+    $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/players/' + userId)).$loaded().then(function (player) {
+      player.team = newTeamNum;
+      player.$save();
+    });
   }
 
   function getIndexId (roomKey, index) {
@@ -157,5 +183,5 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
 
 
   }
-  
+
 }

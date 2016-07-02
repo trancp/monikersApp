@@ -19,7 +19,7 @@
     function RoomController($stateParams, Rooms, $state, $q) {
         var vm = this;
 
-        
+
         vm.isLoading = false;
         vm.room = {};
         vm.form = {};
@@ -45,7 +45,7 @@
                vm.user = vm.room.players[$stateParams.userId];
             });
         }
-        
+
         function submitWords() {
             if (!vm.form.wordOne
                 || !vm.form.wordTwo
@@ -76,10 +76,9 @@
         function readyToStart() {
 
             try {
-                console.log(_.values(vm.room.teams.teamOne).length);
-                console.log(_.values(vm.room.teams.teamTwo).length);
-                return _.values(vm.room.players).length*5 === _.values(vm.room.submittedWords).length
-                    && _.values(vm.room.teams.teamOne).length === _.values(vm.room.teams.teamTwo).length;
+              const equalTeams = _.values(vm.room.teams.teamOne).length === _.values(vm.room.teams.teamTwo).length;
+              const enoughWords = _.values(vm.room.players).length*5 === _.values(vm.room.words).length;
+                return equalTeams && enoughWords;
             }
             catch (error) {
 
@@ -87,19 +86,16 @@
         }
 
         function team(playerIndex) {
-            console.log(playerIndex);
             return _.values(vm.room.players)[playerIndex].team;
         }
 
         function switchTeams () {
-            Rooms.switchTeams($stateParams.roomId, $stateParams.userId, $stateParams.user, vm.user.team);
+            Rooms.switchTeams($stateParams.roomId, $stateParams.userId, vm.user.team);
             vm.user.team = vm.user.team == 'Team One' ? 'Team Two' : 'Team One';
         }
 
         function isUser (playerIndex) {
-            // var playersId = Rooms.getIndexId($stateParams.roomId, playerIndex);
             var playerUsername = _.values(vm.room.players)[playerIndex].username;
-            // console.log(playerUsername);
             return playerUsername == $stateParams.user;
         }
     }
