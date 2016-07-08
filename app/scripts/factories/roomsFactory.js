@@ -28,6 +28,8 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     updatePlayersStatus: updatePlayersStatus,
     updateGameStatus: updateGameStatus,
     nextRound: nextRound,
+    removeWordFromTempWords: removeWordFromTempWords,
+    shuffleWords: shuffleWords,
     all: rooms
   };
 
@@ -74,7 +76,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
     var deferred = $q.defer();
 
     rooms
-      .$add({ created_at: new Date().getTime(), roomCode: roomCode, gameStatus: { gameStarted: false, round: '1' } })
+      .$add({ created_at: new Date().getTime(), roomCode: roomCode, gameStatus: { gameStarted: false, round: '1', wordIndex: 0} })
       .then(function (ref) {
         deferred.resolve(ref.key());
       });
@@ -135,6 +137,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
 
   function copyWordsArray(roomKey) {
     $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey)).$loaded().then(function (room) {
+      room.tempWords = shuffleWords(room.tempWords);
       room.words = room.tempWords;
       room.$save();
     });
@@ -189,8 +192,28 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
 
   function resetWords(roomKey) {
     $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey)).$loaded().then(function (room) {
+      room.words = shuffleWords(room.words);
       room.tempWords = room.words;
       room.$save();
     });
+  }
+
+  function removeWordFromTempWords (roomKey, wordKey) {
+    var deferred = $q.defer();
+    $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/tempWords')).$loaded().then(function (words) {
+      const wordToRemoveIndex =  _.findIndex(words, function (wordKeyToRemove) { return wordKeyToRemove.$id === wordKey });
+      words.$remove(words[wordToRemoveIndex]);
+      deferred.resolve();
+    });
+    return deferred.promise;
+  }
+
+  function shuffleWords (words) {
+    const shuffledWordsObj = {};
+    const wordKeys = _.shuffle(_.keys(words));
+    const shuffledWordsArray = _.shuffle(words);
+    for( var i = 0; i < shuffledWordsArray.length; i ++) {
+      shuffledWordsObj[wordKeys[i]] = shuffledWordsArray[i];
+    }return shuffledWordsObj;
   }
 }
