@@ -1,16 +1,59 @@
-<div>
-  ROUND: {{ $ctrl.room.gameStatus.round }}
+<div ng-if="!$ctrl.everyoneInGame() && !$ctrl.room.gameStatus.readyForNewGame">
+  Waiting for everyone to press start
 </div>
-<span>
-  <md-button class="md-primary" ng-click="$ctrl.nextRound()">
-    Next Round
-</md-button>
-</span>
-<md-button ng-click="$ctrl.gotIt()">
-    Got it!
-</md-button>
-<h1 ng-if="!$ctrl.noWordsLeft()"> {{ $ctrl.getWord() }} </h1>
-<h1 ng-if="$ctrl.noWordsLeft()"> NO MORE WORDS! </h1>
-<md-button class="md-primary" ng-click="$ctrl.nextWord()">
-    Pass
-</md-button>
+
+<div ng-if="$ctrl.everyoneInGame()">
+  <div>
+    ROUND: {{ $ctrl.room.gameStatus.round }}
+  </div>
+  <div>
+    <h2>{{ $ctrl.room.gameStatus.teamTurn }}</h2>
+  </div>
+  <div>
+    <div ng-repeat="player in $ctrl.room.gameStatus.turnOrder track by $index">
+      <li ng-if="$index === $ctrl.room.gameStatus.playerTurn">
+        <h3>{{ $ctrl.getUserName(player.userId) }}</h3>
+      </li>
+      <li ng-if="$index !== $ctrl.room.gameStatus.playerTurn">
+        {{ $ctrl.getUserName(player.userId) }}
+      </li>
+    </div>
+  </div>
+  <div ng-if="$ctrl.isPlayersTurn()">
+    <div>
+      <md-button ng-click="$ctrl.gotIt()">
+        Got it!
+      </md-button>
+      <h1 ng-if="!$ctrl.noWordsLeft()"> {{ $ctrl.getWord() }} </h1>
+      <h1 ng-if="$ctrl.noWordsLeft()"> NO MORE WORDS! </h1>
+      <md-button class="md-primary" ng-click="$ctrl.nextWord()">
+        Pass
+      </md-button>
+    </div>
+    <div>
+      <md-button ng-if="$ctrl.isLastPlayer()" class="md-primary" ng-click="$ctrl.nextRound()">
+        <span ng-if="!($ctrl.room.gameStatus.round === 3)">Next Round</span>
+        <span ng-if="($ctrl.room.gameStatus.round === 3)">New Game</span>
+      </md-button>
+
+    </div>
+
+    <div>
+      <md-button ng-if="!$ctrl.isLastPlayer()" class="md-primary" ng-click="$ctrl.nextPlayersTurn()">
+        Next Player
+      </md-button>
+    </div>
+  </div>
+
+
+
+
+</div>
+
+<div>
+  <md-button ng-if="$ctrl.room.gameStatus.readyForNewGame" class="md-primary" ng-click="$ctrl.goBackToRoom()">
+    <span>New Game</span>
+  </md-button>
+</div>
+
+

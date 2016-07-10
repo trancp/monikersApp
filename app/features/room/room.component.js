@@ -36,6 +36,7 @@
         vm.team = team;
         vm.switchTeams = switchTeams;
         vm.isUser = isUser;
+        vm.isSubmitted = isSubmitted;
 
         function $onInit() {
             vm.isLoading = true;
@@ -66,12 +67,13 @@
                     .addWord($stateParams.roomId, word);
             });
 
+            Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', true);
             vm.submitted = true;
         }
 
         function startGame() {
-            Rooms.updateGameStatus($stateParams.roomId, 'gameStarted', true);
             Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'inGame', true);
+            Rooms.checkIfEveryoneIsInGame($stateParams.roomId);
             $state.go('game', { roomId: $stateParams.roomId, user: $stateParams.user, userId: $stateParams.userId });
         }
 
@@ -98,6 +100,10 @@
 
         function isUser (playerIndex) {
           return _.keys(vm.room.players)[playerIndex] === $stateParams.userId;
+        }
+
+        function isSubmitted () {
+          return vm.user.submittedWords;
         }
     }
 })();

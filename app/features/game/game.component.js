@@ -13,15 +13,17 @@
         return component;
     }
 
-    GameController.$inject = ['$stateParams', 'Rooms'];
+    GameController.$inject = ['$stateParams', 'Rooms', '$state'];
 
-    function GameController($stateParams, Rooms) {
+    function GameController($stateParams, Rooms, $state) {
       var vm = this;
 
       vm.isLoading = false;
       vm.room = {};
-      vm.index = 0;
       vm.wordKey = '';
+      vm.numPlayerStarted = 0;
+      vm.isPlaying = false;
+      vm.getWordIndex = false;
 
       vm.$onInit = $onInit;
       vm.getWord = getWord;
@@ -29,6 +31,12 @@
       vm.gotIt = gotIt;
       vm.nextRound = nextRound;
       vm.noWordsLeft = noWordsLeft;
+      vm.everyoneInGame = everyoneInGame;
+      vm.getUserName = getUserName;
+      vm.isPlayersTurn = isPlayersTurn;
+      vm.nextPlayersTurn = nextPlayersTurn;
+      vm.isLastPlayer = isLastPlayer;
+      vm.goBackToRoom = goBackToRoom;
 
       function $onInit() {
           vm.isLoading = true;
@@ -39,10 +47,15 @@
       }
 
       function getWord () {
+        try {
           if(vm.room.tempWords){
             vm.wordKey = _.keys(vm.room.tempWords)[vm.index];
             return vm.room.tempWords[vm.wordKey].word;
           }
+        } catch (error) {
+
+        }
+
       }
 
       function nextWord () {
@@ -65,18 +78,81 @@
 
       }
 
-
       function nextRound () {
         if(parseInt(vm.room.gameStatus.round) >= 3 ){
-          Rooms.nextRound($stateParams.roomId, 'round', 1);
+          // Rooms.updateGameStatus($stateParams.roomId, 'wordIndex', 0);
+          // Rooms.nextRound($stateParams.roomId, 'round', 1);
+          // Rooms.updateGameStatus($stateParams.roomId, 'playerTurn', 0);
+          // Rooms.updateGameStatus($stateParams.roomId, 'teamTurn', nextTeam());
+          Rooms.newGame($stateParams.roomId);
+          Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'inGame', false)
+          Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', false);
+          $state.go('room', { roomId: $stateParams.roomId, user: $stateParams.user, userId: $stateParams.userId });
+
           return;
         }
+
+        Rooms.updateGameStatus($stateParams.roomId, 'wordIndex', 0);
         var nextRound = parseInt(vm.room.gameStatus.round) + 1;
         Rooms.nextRound($stateParams.roomId, 'round', nextRound);
+        Rooms.updateGameStatus($stateParams.roomId, 'playerTurn', 0);
+        Rooms.updateGameStatus($stateParams.roomId, 'teamTurn', nextTeam());
+
       }
 
       function noWordsLeft () {
         return _.values(vm.room.tempWords).length === 0;
+      }
+
+      function everyoneInGame () {
+        try {
+          return vm.room.gameStatus.gameStarted
+        } catch (error) {
+
+        }
+
+      }
+
+      function getUserName (userId) {
+        return vm.room.players[userId].username;
+      }
+
+      function isPlayersTurn () {
+        try {
+          if ((vm.room.gameStatus.turnOrder[vm.room.gameStatus.playerTurn].userId === $stateParams.userId) && !vm.isPlaying) {
+            vm.index = 0;
+            vm.isPlaying = true;
+          }
+          return vm.room.gameStatus.turnOrder[vm.room.gameStatus.playerTurn].userId === $stateParams.userId;
+
+        } catch (error) {
+
+        }
+      }
+
+      function nextPlayersTurn () {
+        Rooms.updateGameStatus($stateParams.roomId, 'wordIndex', 0);
+        vm.isPlaying = false;
+        Rooms.shuffleTempWords($stateParams.roomId);
+        Rooms.updateGameStatus($stateParams.roomId, 'playerTurn', (vm.room.gameStatus.playerTurn + 1));
+        Rooms.updateGameStatus($stateParams.roomId, 'teamTurn', nextTeam());
+      }
+
+      function isLastPlayer () {
+        return vm.room.gameStatus.playerTurn === _.values(vm.room.players).length-1;
+      }
+
+      function nextTeam () {
+        return vm.room.gameStatus.teamTurn === 'TeamOne' ? 'TeamTwo' : 'TeamOne';
+      }
+
+      function goBackToRoom() {
+        Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'inGame', false).then(function () {
+          Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', false);
+          Rooms.changeNewGameStatus($stateParams.roomId);
+          $state.go('room', { roomId: $stateParams.roomId, user: $stateParams.user, userId: $stateParams.userId });
+        });
+
       }
 
     }
