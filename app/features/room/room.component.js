@@ -7,7 +7,7 @@
 
     function room() {
         var component = {
-            templateUrl: '/features/room/room.component.html',
+            templateUrl: '../app/features/room/room.component.html',
             controller: RoomController
         };
 

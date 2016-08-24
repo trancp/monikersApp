@@ -6,7 +6,8 @@ angular
     'firebase.ref',
     'firebase.auth',
     'ui.router',
-    'ngMaterial'
+    'ngMaterial',
+    'templates-main'
   ])
   .config([
     '$urlRouterProvider',
@@ -17,7 +18,7 @@ angular
       $stateProvider
         .state('home', {
           url: '/',
-          templateUrl: '../views/home.html'
+          templateUrl: '../app/views/home.html'
         })
         .state('create', {
           url: '/create',

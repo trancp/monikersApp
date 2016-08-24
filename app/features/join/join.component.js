@@ -6,7 +6,7 @@ angular
 
 function joinRoom() {
   var component = {
-    templateUrl: '/features/join/join.component.html',
+    templateUrl: '../app/features/join/join.component.html',
     controller: JoinRoomController
   };
 

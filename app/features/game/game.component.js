@@ -7,7 +7,7 @@
 
     function game () {
         var component = {
-            templateUrl : '/features/game/game.component.html',
+            templateUrl : '../app/features/game/game.component.html',
             controller : GameController
         };
         return component;

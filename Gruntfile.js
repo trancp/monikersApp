@@ -391,6 +391,18 @@ module.exports = function (grunt) {
             }
         },
 
+        html2js: {
+            main: {
+                src: [
+                    'app/**/*.html'
+                ],
+                dest: 'app/partialTemplates/templates.js',
+                options: {
+                    watch: true
+                }
+            }
+        },
+
         // Test settings
         karma: {
             unit: {
@@ -412,6 +424,7 @@ module.exports = function (grunt) {
             'concurrent:server',
             'sass:server',
             'autoprefixer:server',
+            'html2js',
             'connect:livereload',
             'watch'
         ]);
@@ -437,6 +450,7 @@ module.exports = function (grunt) {
         'useminPrepare',
         'concurrent:dist',
         'sass:dist',
+        'html2js',
         'autoprefixer',
         'concat',
         'ngAnnotate',

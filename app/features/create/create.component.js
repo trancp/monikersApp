@@ -7,7 +7,7 @@ angular
 
 function createRoom() {
   var component = {
-    templateUrl: '/features/create/create.component.html',
+    templateUrl: '../app/features/create/create.component.html',
     controller: CreateRoomController
   };
 

@@ -6,7 +6,7 @@
 
   function header() {
     const component = {
-      templateUrl: '../components/header/headerComponent.html',
+      templateUrl: '../app/components/header/headerComponent.html',
       controller: headerController
     };
 
