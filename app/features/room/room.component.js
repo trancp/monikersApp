@@ -80,8 +80,8 @@
         function readyToStart() {
 
             try {
-              const equalTeams = _.values(vm.room.teams.teamOne).length === _.values(vm.room.teams.teamTwo).length;
-              const enoughWords = _.values(vm.room.players).length*5 === _.values(vm.room.words).length;
+              var equalTeams = _.values(vm.room.teams.teamOne).length === _.values(vm.room.teams.teamTwo).length;
+              var enoughWords = _.values(vm.room.players).length*5 === _.values(vm.room.words).length;
                 return equalTeams && enoughWords;
             }
             catch (error) {

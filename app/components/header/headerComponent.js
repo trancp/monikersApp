@@ -1,21 +1,21 @@
 (function () {
-  "use strict";
-  angular
-    .module('monikersApp')
-    .component('header', header());
+    "use strict";
+    angular
+        .module('monikersApp')
+        .component('header', header());
 
-  function header() {
-    const component = {
-      templateUrl: '../app/components/header/headerComponent.html',
-      controller: headerController
-    };
+    function header() {
+        var component = {
+            templateUrl: '../app/components/header/headerComponent.html',
+            controller: headerController
+        };
 
-    return component;
-  }
+        return component;
+    }
 
-  headerController.$inject = [];
+    headerController.$inject = [];
 
-  function headerController() {
-    const vm = this;
-  }
+    function headerController() {
+        var vm = this;
+    }
 })();
