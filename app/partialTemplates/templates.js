@@ -281,13 +281,10 @@ angular.module("../app/features/room/room.component.html", []).run(["$templateCa
   $templateCache.put("../app/features/room/room.component.html",
     "<h1>{{ $ctrl.room.roomCode }}</h1>\n" +
     "<md-list>\n" +
-    "  <md-subheader class=\"md-no-sticky\">\n" +
-    "    <span>Players</span>\n" +
-    "  </md-subheader>\n" +
-    "  <div>\n" +
+    "  <div class=\"switch-teams\">\n" +
     "    <md-button class=\"btn-switch-teams md-raised\" ng-click=\"$ctrl.switchTeams()\">SWITCH TEAMS</md-button>\n" +
     "  </div>\n" +
-    "  <div>\n" +
+    "  <div class=\"team-list\">\n" +
     "    <span class=\"col-team-one\" >\n" +
     "      <div class=\"team-label\">Team One</div>\n" +
     "      <div ng-repeat=\"player in $ctrl.room.players track by $index\">\n" +
@@ -301,68 +298,68 @@ angular.module("../app/features/room/room.component.html", []).run(["$templateCa
     "      <div  ng-repeat=\"player in $ctrl.room.players track by $index\">\n" +
     "    <div ng-if=\"player.team === 'Team Two'\">\n" +
     "          <div class=\"user-label\">{{player.username }}</div>\n" +
-    "      <!--<md-button class=\"md-raised\" ng-if=\"$ctrl.isUser($index) && !$ctrl.isSubmitted()\" ng-click=\"$ctrl.switchTeams()\"> {{ $ctrl.team($index) }} </md-button>-->\n" +
-    "      <!--<span ng-if=\"!$ctrl.isUser($index) || $ctrl.isSubmitted()\">{{ $ctrl.team($index) }}</span>-->\n" +
-    "      <!--<div ng-if=\"player.team =='Team One'\"><md-button class=\"md-raised md-primary\" ng-click=\"$ctrl.changeTeams()\">Team One</md-button></div>-->\n" +
-    "      <!--<div ng-if=\"player.team =='Team two'\"><md-button ng-click=\"$ctrl.changeTeams()\">Team Two</md-button></div>-->\n" +
     "    </div>\n" +
     "    </div>\n" +
     "    </span>\n" +
     "\n" +
     "  </div>\n" +
-    "\n" +
-    "\n" +
     "</md-list>\n" +
     "\n" +
-    "<div ng-if=\"!$ctrl.isSubmitted()\">\n" +
+    "<div class=\"form-submit\" ng-if=\"!$ctrl.isSubmitted()\">\n" +
     "  <form ng-submit=\"$ctrl.submitWords()\" ng-if=\"!$ctrl.submitted\">\n" +
     "    <h4 style=\"margin: 0;\">Submit 5 Words!</h4>\n" +
-    "    <li>\n" +
+    "    <div class=\"word-one\">\n" +
     "      <md-input-container>\n" +
-    "        <label>1)</label>\n" +
+    "        <label class=\"word-label\">1)</label>\n" +
     "        <input type=\"text\" ng-model=\"$ctrl.form.wordOne\" autofocus/>\n" +
     "      </md-input-container>\n" +
-    "\n" +
+    "    </div>\n" +
+    "    <div>\n" +
     "      <md-input-container>\n" +
-    "        <label>2)</label>\n" +
+    "        <label class=\"word-label\">2)</label>\n" +
     "        <input type=\"text\" ng-model=\"$ctrl.form.wordTwo\" autofocus/>\n" +
     "      </md-input-container>\n" +
-    "\n" +
+    "    </div>\n" +
+    "    <div>\n" +
     "      <md-input-container>\n" +
-    "        <label>3)</label>\n" +
+    "        <label class=\"word-label\">3)</label>\n" +
     "        <input type=\"text\" ng-model=\"$ctrl.form.wordThree\" autofocus/>\n" +
     "      </md-input-container>\n" +
-    "\n" +
+    "    </div>\n" +
+    "    <div>\n" +
     "      <md-input-container>\n" +
-    "        <label>4)</label>\n" +
+    "        <label class=\"word-label\">4)</label>\n" +
     "        <input type=\"text\" ng-model=\"$ctrl.form.wordFour\" autofocus/>\n" +
     "      </md-input-container>\n" +
-    "\n" +
+    "    </div>\n" +
+    "    <div>\n" +
     "      <md-input-container>\n" +
-    "        <label>5)</label>\n" +
+    "        <label class=\"word-label\">5)</label>\n" +
     "        <input type=\"text\" ng-model=\"$ctrl.form.wordFive\" autofocus/>\n" +
     "      </md-input-container>\n" +
-    "    </li>\n" +
-    "\n" +
-    "    <md-button class=\"btn-submit md-raised md-primary\" ng-click=\"$ctrl.submitWords()\">\n" +
-    "      Submit\n" +
-    "    </md-button>\n" +
+    "    </div>\n" +
+    "    <div>\n" +
+    "      <md-button class=\"btn-submit md-raised md-primary\" ng-click=\"$ctrl.submitWords()\">\n" +
+    "        Submit\n" +
+    "      </md-button>\n" +
+    "    </div>\n" +
     "  </form>\n" +
+    "  <div ng-if=\"$ctrl.submitted\">You have submitted :)</div>\n" +
+    "\n" +
+    "\n" +
+    "  <div >\n" +
+    "    <md-button ng-if=\"$ctrl.readyToStart()\" class=\"md-raised md-primary\" ng-click=\"$ctrl.startGame()\">\n" +
+    "      Start\n" +
+    "    </md-button>\n" +
+    "  </div>\n" +
+    "\n" +
+    "\n" +
+    "  <div class=\"btn-back\">\n" +
+    "    <a href=\"/\">Back</a>\n" +
+    "  </div>\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-if=\"$ctrl.submitted\">You have submitted :)</div>\n" +
     "\n" +
-    "\n" +
-    "<div >\n" +
-    "  <md-button ng-if=\"$ctrl.readyToStart()\" class=\"md-raised md-primary\" ng-click=\"$ctrl.startGame()\">\n" +
-    "    Start\n" +
-    "  </md-button>\n" +
-    "</div>\n" +
-    "\n" +
-    "\n" +
-    "<div class=\"btn-back\">\n" +
-    "  <a href=\"/\">Back</a>\n" +
-    "</div>\n" +
     "");
 }]);
 
@@ -379,7 +376,7 @@ angular.module("../app/index.html", []).run(["$templateCache", function($templat
     "    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->\n" +
     "    <!-- build:css(.) styles/vendor.css -->\n" +
     "    <!-- bower:css -->\n" +
-    "    <link rel=\"stylesheet\" href=\"bower_components/angular-material/angular-material.css\" />\n" +
+    "    <link rel=\"stylesheet\" href=\"/bower_components/angular-material/angular-material.css\" />\n" +
     "    <!-- endbower -->\n" +
     "    <!-- endbuild -->\n" +
     "    <!-- build:css(.tmp) styles/main.css -->\n" +

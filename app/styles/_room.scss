@@ -6,27 +6,49 @@
   padding: 30px 50px;
 }
 
-.btn-switch-teams {
-  padding: 20px 40px;
+.switch-teams {
+  text-align: center;
+
+  .btn-switch-teams {
+    padding: 20px 40px;
+    text-align: center;
+  }
 }
 
-.col-team-one {
-  vertical-align: top;
-  display: inline-block;
-  padding: 20px;
+
+
+.team-list {
+  text-align: center;
+
+  .col-team-one {
+    vertical-align: top;
+    display: inline-block;
+    padding: 10px;
+  }
+
+  .col-team-two {
+    vertical-align: top;
+    display: inline-block;
+    padding: 10px;
+  }
 }
 
-.col-team-two {
-  vertical-align: top;
-  display: inline-block;
-  padding: 20px;
-}
+
 
 .team-label {
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .user-label {
   text-align: center;
   padding: 5px;
+}
+
+.form-submit {
+  text-align: center;
+
+  .word-label {
+    text-align: left;
+  }
+
 }
