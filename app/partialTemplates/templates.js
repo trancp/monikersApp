@@ -379,9 +379,7 @@ angular.module("../app/index.html", []).run(["$templateCache", function($templat
     "    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->\n" +
     "    <!-- build:css(.) styles/vendor.css -->\n" +
     "    <!-- bower:css -->\n" +
-    "    <link rel=\"stylesheet\" href=\"/bower_components/angular-material/angular-material.css\" />\n" +
-    "    <link rel=\"stylesheet\" href=\"/features/game/game.component.css\" />\n" +
-    "    <link rel=\"stylesheet\" href=\"/features/room/room.component.css\" />\n" +
+    "    <link rel=\"stylesheet\" href=\"bower_components/angular-material/angular-material.css\" />\n" +
     "    <!-- endbower -->\n" +
     "    <!-- endbuild -->\n" +
     "    <!-- build:css(.tmp) styles/main.css -->\n" +

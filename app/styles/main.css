@@ -1,0 +1,30 @@
+.btn-game {
+  padding: 20px 60px; }
+
+.btn-back {
+  padding-top: 70px; }
+
+.btn-submit {
+  padding: 30px 50px; }
+
+.btn-switch-teams {
+  padding: 20px 40px; }
+
+.col-team-one {
+  vertical-align: top;
+  display: inline-block;
+  padding: 20px;
+  margin-right: 20px; }
+
+.col-team-two {
+  vertical-align: top;
+  display: inline-block;
+  padding: 20px;
+  margin-left: 20px; }
+
+.team-label {
+  font-size: 30px; }
+
+.user-label {
+  text-align: center;
+  padding: 5px; }
