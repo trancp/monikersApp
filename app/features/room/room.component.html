@@ -1,17 +1,36 @@
 <h1>{{ $ctrl.room.roomCode }}</h1>
 <md-list>
-    <md-subheader class="md-no-sticky">
-        <span>Players</span>
-    </md-subheader>
-    <div ng-repeat="player in $ctrl.room.players track by $index">
-        <span>
-            {{player.username }}
-          <md-button class="md-raised" ng-if="$ctrl.isUser($index) && !$ctrl.isSubmitted()" ng-click="$ctrl.switchTeams()"> {{ $ctrl.team($index) }} </md-button>
-          <span ng-if="!$ctrl.isUser($index) || $ctrl.isSubmitted()">{{ $ctrl.team($index) }}</span>
-                <!--<div ng-if="player.team =='Team One'"><md-button class="md-raised md-primary" ng-click="$ctrl.changeTeams()">Team One</md-button></div>-->
-                <!--<div ng-if="player.team =='Team two'"><md-button ng-click="$ctrl.changeTeams()">Team Two</md-button></div>-->
-        </span>
+  <md-subheader class="md-no-sticky">
+    <span>Players</span>
+  </md-subheader>
+  <div>
+    <md-button class="btn-switch-teams md-raised" ng-click="$ctrl.switchTeams()">SWITCH TEAMS</md-button>
+  </div>
+  <div>
+    <span class="col-team-one" >
+      <div class="team-label">Team One</div>
+      <div ng-repeat="player in $ctrl.room.players track by $index">
+        <div ng-if="player.team === 'Team One'">
+          <div class="user-label">{{player.username }}</div>
+        </div>
     </div>
+    </span>
+    <span class="col-team-two">
+          <div class="team-label">Team Two</div>
+      <div  ng-repeat="player in $ctrl.room.players track by $index">
+    <div ng-if="player.team === 'Team Two'">
+          <div class="user-label">{{player.username }}</div>
+      <!--<md-button class="md-raised" ng-if="$ctrl.isUser($index) && !$ctrl.isSubmitted()" ng-click="$ctrl.switchTeams()"> {{ $ctrl.team($index) }} </md-button>-->
+      <!--<span ng-if="!$ctrl.isUser($index) || $ctrl.isSubmitted()">{{ $ctrl.team($index) }}</span>-->
+      <!--<div ng-if="player.team =='Team One'"><md-button class="md-raised md-primary" ng-click="$ctrl.changeTeams()">Team One</md-button></div>-->
+      <!--<div ng-if="player.team =='Team two'"><md-button ng-click="$ctrl.changeTeams()">Team Two</md-button></div>-->
+    </div>
+    </div>
+    </span>
+
+  </div>
+
+
 </md-list>
 
 <div ng-if="!$ctrl.isSubmitted()">
@@ -44,7 +63,7 @@
       </md-input-container>
     </li>
 
-    <md-button class="md-raised md-primary" ng-click="$ctrl.submitWords()">
+    <md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.submitWords()">
       Submit
     </md-button>
   </form>
@@ -52,8 +71,14 @@
 
 <div ng-if="$ctrl.submitted">You have submitted :)</div>
 
-<md-button ng-if="$ctrl.readyToStart()" class="md-raised md-primary" ng-click="$ctrl.startGame()">
-    Start
-</md-button>
 
-<a href="/">Back</a>
+<div >
+  <md-button ng-if="$ctrl.readyToStart()" class="md-raised md-primary" ng-click="$ctrl.startGame()">
+    Start
+  </md-button>
+</div>
+
+
+<div class="btn-back">
+  <a href="/">Back</a>
+</div>

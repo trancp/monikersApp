@@ -216,17 +216,17 @@ angular.module("../app/features/game/game.component.html", []).run(["$templateCa
     "  </div>\n" +
     "  <div ng-if=\"$ctrl.isPlayersTurn()\">\n" +
     "    <div>\n" +
-    "      <md-button ng-click=\"$ctrl.gotIt()\">\n" +
+    "      <md-button class=\"btn-game md-raised\" ng-click=\"$ctrl.gotIt()\">\n" +
     "        Got it!\n" +
     "      </md-button>\n" +
     "      <h1 ng-if=\"!$ctrl.noWordsLeft()\"> {{ $ctrl.getWord() }} </h1>\n" +
     "      <h1 ng-if=\"$ctrl.noWordsLeft()\"> NO MORE WORDS! </h1>\n" +
-    "      <md-button class=\"md-primary\" ng-click=\"$ctrl.nextWord()\">\n" +
+    "      <md-button class=\"btn-game md-raised md-primary\" ng-click=\"$ctrl.nextWord()\">\n" +
     "        Pass\n" +
     "      </md-button>\n" +
     "    </div>\n" +
     "    <div>\n" +
-    "      <md-button ng-if=\"$ctrl.isLastPlayer()\" class=\"md-primary\" ng-click=\"$ctrl.nextRound()\">\n" +
+    "      <md-button ng-if=\"$ctrl.isLastPlayer()\" class=\"btn-game md-primary\" ng-click=\"$ctrl.nextRound()\">\n" +
     "        <span ng-if=\"!($ctrl.room.gameStatus.round === 3)\">Next Round</span>\n" +
     "        <span ng-if=\"($ctrl.room.gameStatus.round === 3)\">New Game</span>\n" +
     "      </md-button>\n" +
@@ -234,7 +234,7 @@ angular.module("../app/features/game/game.component.html", []).run(["$templateCa
     "    </div>\n" +
     "\n" +
     "    <div>\n" +
-    "      <md-button ng-if=\"!$ctrl.isLastPlayer()\" class=\"md-primary\" ng-click=\"$ctrl.nextPlayersTurn()\">\n" +
+    "      <md-button ng-if=\"!$ctrl.isLastPlayer()\" class=\"btn-game md-raised md-primary\" ng-click=\"$ctrl.nextPlayersTurn()\">\n" +
     "        Next Player\n" +
     "      </md-button>\n" +
     "    </div>\n" +
@@ -246,7 +246,7 @@ angular.module("../app/features/game/game.component.html", []).run(["$templateCa
     "</div>\n" +
     "\n" +
     "<div>\n" +
-    "  <md-button ng-if=\"$ctrl.room.gameStatus.readyForNewGame\" class=\"md-primary\" ng-click=\"$ctrl.goBackToRoom()\">\n" +
+    "  <md-button ng-if=\"$ctrl.room.gameStatus.readyForNewGame\" class=\"btn-game md-primary\" ng-click=\"$ctrl.goBackToRoom()\">\n" +
     "    <span>New Game</span>\n" +
     "  </md-button>\n" +
     "</div>\n" +
@@ -281,18 +281,37 @@ angular.module("../app/features/room/room.component.html", []).run(["$templateCa
   $templateCache.put("../app/features/room/room.component.html",
     "<h1>{{ $ctrl.room.roomCode }}</h1>\n" +
     "<md-list>\n" +
-    "    <md-subheader class=\"md-no-sticky\">\n" +
-    "        <span>Players</span>\n" +
-    "    </md-subheader>\n" +
-    "    <div ng-repeat=\"player in $ctrl.room.players track by $index\">\n" +
-    "        <span>\n" +
-    "            {{player.username }}\n" +
-    "          <md-button class=\"md-raised\" ng-if=\"$ctrl.isUser($index) && !$ctrl.isSubmitted()\" ng-click=\"$ctrl.switchTeams()\"> {{ $ctrl.team($index) }} </md-button>\n" +
-    "          <span ng-if=\"!$ctrl.isUser($index) || $ctrl.isSubmitted()\">{{ $ctrl.team($index) }}</span>\n" +
-    "                <!--<div ng-if=\"player.team =='Team One'\"><md-button class=\"md-raised md-primary\" ng-click=\"$ctrl.changeTeams()\">Team One</md-button></div>-->\n" +
-    "                <!--<div ng-if=\"player.team =='Team two'\"><md-button ng-click=\"$ctrl.changeTeams()\">Team Two</md-button></div>-->\n" +
-    "        </span>\n" +
+    "  <md-subheader class=\"md-no-sticky\">\n" +
+    "    <span>Players</span>\n" +
+    "  </md-subheader>\n" +
+    "  <div>\n" +
+    "    <md-button class=\"btn-switch-teams md-raised\" ng-click=\"$ctrl.switchTeams()\">SWITCH TEAMS</md-button>\n" +
+    "  </div>\n" +
+    "  <div>\n" +
+    "    <span class=\"col-team-one\" >\n" +
+    "      <div class=\"team-label\">Team One</div>\n" +
+    "      <div ng-repeat=\"player in $ctrl.room.players track by $index\">\n" +
+    "        <div ng-if=\"player.team === 'Team One'\">\n" +
+    "          <div class=\"user-label\">{{player.username }}</div>\n" +
+    "        </div>\n" +
     "    </div>\n" +
+    "    </span>\n" +
+    "    <span class=\"col-team-two\">\n" +
+    "          <div class=\"team-label\">Team Two</div>\n" +
+    "      <div  ng-repeat=\"player in $ctrl.room.players track by $index\">\n" +
+    "    <div ng-if=\"player.team === 'Team Two'\">\n" +
+    "          <div class=\"user-label\">{{player.username }}</div>\n" +
+    "      <!--<md-button class=\"md-raised\" ng-if=\"$ctrl.isUser($index) && !$ctrl.isSubmitted()\" ng-click=\"$ctrl.switchTeams()\"> {{ $ctrl.team($index) }} </md-button>-->\n" +
+    "      <!--<span ng-if=\"!$ctrl.isUser($index) || $ctrl.isSubmitted()\">{{ $ctrl.team($index) }}</span>-->\n" +
+    "      <!--<div ng-if=\"player.team =='Team One'\"><md-button class=\"md-raised md-primary\" ng-click=\"$ctrl.changeTeams()\">Team One</md-button></div>-->\n" +
+    "      <!--<div ng-if=\"player.team =='Team two'\"><md-button ng-click=\"$ctrl.changeTeams()\">Team Two</md-button></div>-->\n" +
+    "    </div>\n" +
+    "    </div>\n" +
+    "    </span>\n" +
+    "\n" +
+    "  </div>\n" +
+    "\n" +
+    "\n" +
     "</md-list>\n" +
     "\n" +
     "<div ng-if=\"!$ctrl.isSubmitted()\">\n" +
@@ -325,7 +344,7 @@ angular.module("../app/features/room/room.component.html", []).run(["$templateCa
     "      </md-input-container>\n" +
     "    </li>\n" +
     "\n" +
-    "    <md-button class=\"md-raised md-primary\" ng-click=\"$ctrl.submitWords()\">\n" +
+    "    <md-button class=\"btn-submit md-raised md-primary\" ng-click=\"$ctrl.submitWords()\">\n" +
     "      Submit\n" +
     "    </md-button>\n" +
     "  </form>\n" +
@@ -333,11 +352,17 @@ angular.module("../app/features/room/room.component.html", []).run(["$templateCa
     "\n" +
     "<div ng-if=\"$ctrl.submitted\">You have submitted :)</div>\n" +
     "\n" +
-    "<md-button ng-if=\"$ctrl.readyToStart()\" class=\"md-raised md-primary\" ng-click=\"$ctrl.startGame()\">\n" +
-    "    Start\n" +
-    "</md-button>\n" +
     "\n" +
-    "<a href=\"/\">Back</a>\n" +
+    "<div >\n" +
+    "  <md-button ng-if=\"$ctrl.readyToStart()\" class=\"md-raised md-primary\" ng-click=\"$ctrl.startGame()\">\n" +
+    "    Start\n" +
+    "  </md-button>\n" +
+    "</div>\n" +
+    "\n" +
+    "\n" +
+    "<div class=\"btn-back\">\n" +
+    "  <a href=\"/\">Back</a>\n" +
+    "</div>\n" +
     "");
 }]);
 
@@ -354,7 +379,9 @@ angular.module("../app/index.html", []).run(["$templateCache", function($templat
     "    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->\n" +
     "    <!-- build:css(.) styles/vendor.css -->\n" +
     "    <!-- bower:css -->\n" +
-    "    <link rel=\"stylesheet\" href=\"bower_components/angular-material/angular-material.css\" />\n" +
+    "    <link rel=\"stylesheet\" href=\"/bower_components/angular-material/angular-material.css\" />\n" +
+    "    <link rel=\"stylesheet\" href=\"/features/game/game.component.css\" />\n" +
+    "    <link rel=\"stylesheet\" href=\"/features/room/room.component.css\" />\n" +
     "    <!-- endbower -->\n" +
     "    <!-- endbuild -->\n" +
     "    <!-- build:css(.tmp) styles/main.css -->\n" +
