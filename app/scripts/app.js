@@ -38,4 +38,9 @@ angular
         });
 
       $urlRouterProvider.otherwise('/');
-    }]);
+    }])
+  .config(['$mdIconProvider', function ($mdIconProvider) {
+    $mdIconProvider
+      .icon('key', 'icons/key.svg')
+      .icon('remove', 'icons/remove.svg')
+  }]);

@@ -28,6 +28,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         updateGameStatus: updateGameStatus,
         nextRound: nextRound,
         removeWordFromTempWords: removeWordFromTempWords,
+        getWordsSubmittedByUserAndRemove: getWordsSubmittedByUserAndRemove,
         shuffleWords: shuffleWords,
         firstToGo: firstToGo,
         setUpPlayerTurns: setUpPlayerTurns,
@@ -36,6 +37,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         shuffleTempWords: shuffleTempWords,
         newGame: newGame,
         changeNewGameStatus: changeNewGameStatus,
+        removeUser: removeUser,
         all: rooms
     };
 
@@ -89,7 +91,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
             .$add({
                 created_at: new Date().getTime(),
                 roomCode: roomCode,
-                gameStatus: {gameStarted: false, round: '1', wordIndex: 0, teamTurn: '', readyForNewGame: false}
+                gameStatus: {gameStarted: false, round: '1', wordIndex: 0, teamTurn: '', readyForNewGame: false, roomMaster: null}
             })
             .then(function (ref) {
                 deferred.resolve(ref.key());
@@ -102,10 +104,11 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         var deferred = $q.defer();
 
         $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/players'))
-            .$add({username: username, team: 'Team One', inGame: false, submittedWords: false})
+            .$add({username: username, team: 'Team One', inGame: false, submittedWords: false, isMaster: true})
             .then(function (ref) {
                 deferred.resolve(ref.key());
                 addPlayerToTeam(roomKey, ref.key(), 'teamOne');
+                updateGameStatus(roomKey, 'roomMaster', ref.key());
             });
 
         return deferred.promise;
@@ -127,7 +130,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         var deferred = $q.defer();
 
         $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/players'))
-            .$add({username: username, team: 'Team One', inGame: false, submittedWords: false})
+            .$add({username: username, team: 'Team One', inGame: false, submittedWords: false, isMaster: false})
             .then(function (ref) {
                 deferred.resolve(ref.key());
                 addPlayerToTeam(roomKey, ref.key(), 'teamOne');
@@ -136,11 +139,11 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         return deferred.promise;
     }
 
-    function addWord(roomKey, newWord) {
+    function addWord(roomKey, newWord, userKey) {
         var deferred = $q.defer();
 
         $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/tempWords'))
-            .$add({word: newWord})
+            .$add({word: newWord, submittedBy: userKey})
             .then(function (ref) {
                 deferred.resolve(ref.key());
                 copyWordsArray(roomKey);
@@ -230,6 +233,36 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
             deferred.resolve();
         });
         return deferred.promise;
+    }
+
+    function removeWord(roomKey, wordKey) {
+      var deferred = $q.defer();
+      $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/tempWords/' + wordKey)).$loaded().then(function (wordToRemove) {
+        wordToRemove.$remove().then(function (ref) {
+          deferred.resolve(ref);
+        });
+      });
+      return deferred.promise;
+
+    }
+
+    function getWordsSubmittedByUserAndRemove(roomKey, userKey) {
+      var deferred = $q.defer();
+      $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/tempWords')).$loaded().then(function (words) {
+        var wordsToRemoveKeys = [];
+        for (var i=0; i<words.length; i++){
+          if (words[i].submittedBy === userKey) {
+            wordsToRemoveKeys.push(words[i].$id);
+          }
+        }
+        for (var j=0; j < wordsToRemoveKeys.length; j++) {
+          removeWord(roomKey, wordsToRemoveKeys[j]);
+        }
+        copyWordsArray(roomKey);
+        updatePlayersStatus(roomKey, userKey, 'submittedWords', false);
+        deferred.resolve();
+      });
+      return deferred.promise;
     }
 
     function shuffleWords(words) {
@@ -328,5 +361,15 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
                 Rooms.updateGameStatus(roomKey, 'readyForNewGame', false);
             }
         });
+    }
+
+    function removeUser(roomKey, userKey) {
+      var deferred = $q.defer();
+      $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/players/' + userKey)).$loaded().then(function (userToRemove) {
+        userToRemove.$remove().then(function (ref) {
+          deferred.resolve(ref);
+        });
+      });
+      return deferred.promise;
     }
 }

@@ -8,7 +8,11 @@
       <div class="team-label">Team One</div>
       <div ng-repeat="player in $ctrl.room.players track by $index">
         <div ng-if="player.team === 'Team One'">
-          <div class="user-label">{{player.username }}</div>
+          <span class="user-label">{{ player.username }}</span>
+          <span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master"></md-icon></span>
+          <span ng-if="$ctrl.participantIsMaster()">
+            <span ng-if="!player.isMaster"><md-icon md-svg-icon="remove" aria-label="remove" ng-click="$ctrl.removeUser($index)"></md-icon></span>
+          </span>
         </div>
     </div>
     </span>
@@ -16,7 +20,11 @@
           <div class="team-label">Team Two</div>
       <div  ng-repeat="player in $ctrl.room.players track by $index">
     <div ng-if="player.team === 'Team Two'">
-          <div class="user-label">{{player.username }}</div>
+          <span class="user-label">{{player.username }}</span>
+          <span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master""></md-icon></span>
+          <span ng-if="$ctrl.participantIsMaster()">
+            <span ng-if="!player.isMaster"><md-icon md-svg-icon="remove" aria-label="remove" ng-click="$ctrl.removeUser($index)"></md-icon></span>
+          </span>
     </div>
     </div>
     </span>
@@ -24,7 +32,7 @@
   </div>
 </md-list>
 
-<div class="form-submit" ng-if="!$ctrl.isSubmitted()">
+<div class="form-submit" ng-if="!(vm.submitted || vm.isSubmitted())">
   <form ng-submit="$ctrl.submitWords()" ng-if="!$ctrl.submitted">
     <h4 style="margin: 0;">Submit 5 Words!</h4>
     <div class="word-one">
@@ -63,19 +71,26 @@
       </md-button>
     </div>
   </form>
-  <div ng-if="$ctrl.submitted">You have submitted :)</div>
+
+</div>
+
+<div ng-if="$ctrl.isSubmitted()" class="element-centered" >
+  <div>Waiting for everyone to submit words</div>
+  <md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.deleteSubmitWords()">
+    Delete Submissions
+  </md-button>
+</div>
 
 
-  <div >
-    <md-button ng-if="$ctrl.readyToStart()" class="md-raised md-primary" ng-click="$ctrl.startGame()">
-      Start
-    </md-button>
-  </div>
+<div class="element-centered">
+  <md-button ng-if="$ctrl.readyToStart()" class="md-raised md-primary" ng-click="$ctrl.startGame()">
+    Start
+  </md-button>
+</div>
 
 
-  <div class="btn-back">
-    <a href="/">Back</a>
-  </div>
+<div class="btn-back element-centered">
+  <a href="/">Back</a>
 </div>
 
 

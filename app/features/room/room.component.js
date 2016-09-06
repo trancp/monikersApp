@@ -37,6 +37,9 @@
         vm.switchTeams = switchTeams;
         vm.isUser = isUser;
         vm.isSubmitted = isSubmitted;
+        vm.participantIsMaster = participantIsMaster;
+        vm.deleteSubmitWords = deleteSubmitWords;
+        vm.removeUser = removeUser;
 
         function $onInit() {
             vm.isLoading = true;
@@ -44,6 +47,7 @@
            Rooms.getRoom($stateParams.roomId).then(function(obj){
               vm.room = obj;
               vm.user = vm.room.players[$stateParams.userId];
+              vm.submitted = vm.user.submittedWords;
             });
         }
 
@@ -64,7 +68,7 @@
 
             _.forEach(vm.wordsToSubmit, function (word) {
                 Rooms
-                    .addWord($stateParams.roomId, word);
+                    .addWord($stateParams.roomId, word, $stateParams.userId);
             });
 
             Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', true);
@@ -103,7 +107,24 @@
         }
 
         function isSubmitted () {
-          return vm.user.submittedWords;
+          return _.get(vm.room, `players.${$stateParams.userId}.submittedWords`);
+        }
+
+        function participantIsMaster() {
+          return vm.room.gameStatus.roomMaster === $stateParams.userId;
+        }
+
+        function deleteSubmitWords() {
+          vm.submitted = false;
+          Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, $stateParams.userId);
+        }
+
+        function removeUser(playerIndex) {
+          var userIdToRemove = _.keys(vm.room.players)[playerIndex];
+          Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, userIdToRemove).then(function () {
+            Rooms.removeUser($stateParams.roomId, userIdToRemove);
+          });
+
         }
     }
 })();
