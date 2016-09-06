@@ -47,7 +47,7 @@
            Rooms.getRoom($stateParams.roomId).then(function(obj){
               vm.room = obj;
               vm.user = vm.room.players[$stateParams.userId];
-              vm.submitted = vm.user.submittedWords;
+              vm.submitted = _.get(vm.user, 'submittedWords');
             });
         }
 
