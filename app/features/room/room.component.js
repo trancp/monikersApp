@@ -107,7 +107,7 @@
         }
 
         function isSubmitted () {
-          return _.get(vm.room, `players.${$stateParams.userId}.submittedWords`);
+          return _.get(vm.room, 'players.' + $stateParams.userId + '.submittedWords');
         }
 
         function participantIsMaster() {
