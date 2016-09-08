@@ -8,6 +8,7 @@
       <div class="team-label">Team One</div>
       <div ng-repeat="player in $ctrl.room.players track by $index">
         <div ng-if="player.team === 'Team One'">
+          <span ng-if="player.submittedWords"><md-icon md-svg-icon="checkmark" aria-label="submitted"></md-icon></span>
           <span class="user-label">{{ player.username }}</span>
           <span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master"></md-icon></span>
           <span ng-if="$ctrl.participantIsMaster()">
@@ -20,6 +21,7 @@
           <div class="team-label">Team Two</div>
       <div  ng-repeat="player in $ctrl.room.players track by $index">
     <div ng-if="player.team === 'Team Two'">
+          <span ng-if="player.submittedWords"><md-icon md-svg-icon="checkmark" aria-label="submitted"></md-icon></span>
           <span class="user-label">{{player.username }}</span>
           <span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master""></md-icon></span>
           <span ng-if="$ctrl.participantIsMaster()">
