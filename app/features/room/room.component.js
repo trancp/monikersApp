@@ -119,16 +119,15 @@
 
         function deleteSubmitWords() {
           vm.submitted = false;
-          Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, $stateParams.userId);
+          Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, $stateParams.userId, 'staying');
         }
 
         function removeUser(playerIndex) {
-          var userIdToRemove = _.keys(vm.room.players)[playerIndex];
-          Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, userIdToRemove).then(function () {
-            var userTeamToRemove = vm.room.players[userIdToRemove].team;
-            Rooms.removeUserFromTeam($stateParams.roomId, userTeamToRemove, userIdToRemove);
-            Rooms.removeUser($stateParams.roomId, '/players/', userIdToRemove);
-          });
+          var userIdToRemove = playerIndex ? _.keys(vm.room.players)[playerIndex] : $stateParams.userId;
+          Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, userIdToRemove, 'leaving');
+          var userTeamToRemove = vm.room.players[userIdToRemove].team;
+          Rooms.removeUserFromTeam($stateParams.roomId, userTeamToRemove, userIdToRemove);
+          Rooms.removeUser($stateParams.roomId, '/players/', userIdToRemove);
 
         }
     }

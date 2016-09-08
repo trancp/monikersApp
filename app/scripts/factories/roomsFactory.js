@@ -247,7 +247,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
 
     }
 
-    function getWordsSubmittedByUserAndRemove(roomKey, userKey) {
+    function getWordsSubmittedByUserAndRemove(roomKey, userKey, afterState) {
       var deferred = $q.defer();
       $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/tempWords')).$loaded().then(function (words) {
         var wordsToRemoveKeys = [];
@@ -260,7 +260,9 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
           removeWord(roomKey, wordsToRemoveKeys[j]);
         }
         copyWordsArray(roomKey);
-        updatePlayersStatus(roomKey, userKey, 'submittedWords', false);
+        if ('staying' === afterState) {
+          updatePlayersStatus(roomKey, userKey, 'submittedWords', false);
+        }
         deferred.resolve();
       });
       return deferred.promise;
