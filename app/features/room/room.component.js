@@ -71,8 +71,11 @@
                     .addWord($stateParams.roomId, word, $stateParams.userId);
             });
 
-            Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', true);
-            vm.submitted = true;
+            Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', true).then(function () {
+              vm.submitted = true;
+              vm.wordsToSubmit = [];
+
+            });
         }
 
         function startGame() {
@@ -122,7 +125,9 @@
         function removeUser(playerIndex) {
           var userIdToRemove = _.keys(vm.room.players)[playerIndex];
           Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, userIdToRemove).then(function () {
-            Rooms.removeUser($stateParams.roomId, userIdToRemove);
+            var userTeamToRemove = vm.room.players[userIdToRemove].team;
+            Rooms.removeUserFromTeam($stateParams.roomId, userTeamToRemove, userIdToRemove);
+            Rooms.removeUser($stateParams.roomId, '/players/', userIdToRemove);
           });
 
         }

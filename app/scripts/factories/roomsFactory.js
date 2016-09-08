@@ -37,6 +37,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         shuffleTempWords: shuffleTempWords,
         newGame: newGame,
         changeNewGameStatus: changeNewGameStatus,
+        removeUserFromTeam:removeUserFromTeam,
         removeUser: removeUser,
         all: rooms
     };
@@ -363,13 +364,29 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         });
     }
 
-    function removeUser(roomKey, userKey) {
+    function removeUserFromTeam(roomKey, teamNum, userKey) {
       var deferred = $q.defer();
-      $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/players/' + userKey)).$loaded().then(function (userToRemove) {
+      var team = ('Team One' === teamNum ) ? 'teamOne' : 'teamTwo';
+      $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/teams/' + team)).$loaded().then(function (teamArray) {
+        var userKeyToRemove = teamArray[_.findIndex(teamArray, function (teamMember) {
+          return teamMember.userId === userKey;
+        })].$id;
+        removeUser(roomKey, '/teams/'+team+'/', userKeyToRemove).then(function (ref) {
+          deferred.resolve(ref);
+        });
+      });
+      return deferred.promise;
+    }
+
+    function removeUser(roomKey, field, userKey) {
+      var deferred = $q.defer();
+      $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + field + userKey)).$loaded().then(function (userToRemove) {
         userToRemove.$remove().then(function (ref) {
           deferred.resolve(ref);
         });
       });
       return deferred.promise;
     }
+
+
 }
