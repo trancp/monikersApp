@@ -11,6 +11,12 @@
     <span>Team Two: {{$ctrl.getScore()[1]}} </span>
 
   </div>
+  <div ng-if="$ctrl.room.gameStatus.timer">
+    <timer class="game-timer" interval="1000" countdown="2">{{countdown}}</timer>
+  </div>
+  <div ng-if="!$ctrl.room.gameStatus.timer && $ctrl.isPlayersTurn() && !$ctrl.room.gameStatus.endTurn">
+    <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.startTimer()">Start Timer</md-button>
+  </div>
   <div>
     <h2>{{ $ctrl.room.gameStatus.teamTurn }}</h2>
   </div>
@@ -25,19 +31,19 @@
     </div>
   </div>
   <div ng-if="$ctrl.isPlayersTurn()">
-    <div class="u-margin-30-0">
+    <div class="u-margin-30-0" ng-if="$ctrl.room.gameStatus.timer">
       <md-button class="btn-game md-raised" ng-click="$ctrl.gotIt()">
         Got it!
       </md-button>
     </div>
-    <div class="u-margin-30-0">
+    <div class="u-margin-30-0" ng-if="$ctrl.room.gameStatus.timer">
       <h1 ng-if="!$ctrl.noWordsLeft()"> {{ $ctrl.getWord() }} </h1>
       <h1 ng-if="$ctrl.noWordsLeft()"> NO MORE WORDS! </h1>
-      <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.nextWord()">
+      <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.nextWord()" ng-if="!$ctrl.room.gameStatus.endTurn">
         Pass
       </md-button>
     </div>
-    <div class="u-margin-30-0">
+    <div class="u-margin-30-0" ng-if="$ctrl.room.gameStatus.endTurn">
       <md-button ng-if="$ctrl.isLastPlayer()" class="btn-game md-primary" ng-click="$ctrl.nextRound()">
         <span ng-if="!($ctrl.room.gameStatus.round === 3)">Next Round</span>
         <span ng-if="($ctrl.room.gameStatus.round === 3)">New Game</span>
@@ -45,16 +51,12 @@
 
     </div>
 
-    <div class="u-margin-70-0-0">
+    <div class="u-margin-70-0-0" ng-if="$ctrl.room.gameStatus.endTurn">
       <md-button ng-if="!$ctrl.isLastPlayer()" class="btn-game md-primary" ng-click="$ctrl.nextPlayersTurn()">
         Next Player
       </md-button>
     </div>
   </div>
-
-
-
-
 </div>
 
 <div>

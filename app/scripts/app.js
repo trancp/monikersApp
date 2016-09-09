@@ -7,7 +7,8 @@ angular
     'firebase.auth',
     'ui.router',
     'ngMaterial',
-    'templates-main'
+    'templates-main',
+    'timer'
   ])
   .config([
     '$urlRouterProvider',
