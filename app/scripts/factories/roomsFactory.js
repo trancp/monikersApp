@@ -93,7 +93,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
             .$add({
                 created_at: new Date().getTime(),
                 roomCode: roomCode,
-                gameStatus: {gameStarted: false, round: '1', wordIndex: 0, teamTurn: '', readyForNewGame: false, roomMaster: null}
+                gameStatus: {gameStarted: false, round: '1', wordIndex: 0, teamTurn: '', readyForNewGame: false, roomMaster: null, timer: false, endTurn: false}
             })
             .then(function (ref) {
                 deferred.resolve(ref.key());
@@ -207,13 +207,18 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         $firebaseObject(new Firebase(FBURL + 'rooms/' + roomKey + '/gameStatus')).$loaded().then(function (gameStatus) {
             gameStatus[field] = statusChange;
             gameStatus.$save();
-            deferred.resolve();
+            deferred.resolve(gameStatus);
         });
         return deferred.promise;
     }
 
     function nextRound(roomKey, field, nextRoundNum) {
-        updateGameStatus(roomKey, field, nextRoundNum);
+        updateGameStatus(roomKey, field, nextRoundNum).then(function (gameStatus) {
+          var nextTeamToStart = 1 === gameStatus.teamStartingThisRound ? 2 : 1;
+          setUpPlayerTurns(roomKey, nextTeamToStart)
+          gameStatus.teamStartingThisRound = nextTeamToStart;
+          gameStatus.$save();
+        });
         resetWords(roomKey);
     }
 
@@ -286,6 +291,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
             teamToStart = 'TeamTwo';
         }
         updateGameStatus(roomKey, 'teamTurn', teamToStart);
+        updateGameStatus(roomKey, 'teamStartingThisRound', randomNumber);
         setUpPlayerTurns(roomKey, randomNumber);
     }
 
