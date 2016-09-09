@@ -39,6 +39,7 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         changeNewGameStatus: changeNewGameStatus,
         removeUserFromTeam:removeUserFromTeam,
         removeUser: removeUser,
+        updateScore: updateScore,
         all: rooms
     };
 
@@ -386,6 +387,16 @@ function Rooms($firebaseArray, $firebaseObject, $q, FBURL) {
         userToRemove.$remove().then(function (ref) {
           deferred.resolve(ref);
         });
+      });
+      return deferred.promise;
+    }
+
+    function updateScore(roomKey, wordKey, teamNum) {
+      var team = ('Team One' === teamNum ) ? 'teamOne' : 'teamTwo';
+      var deferred = $q.defer();
+      $firebaseArray(new Firebase(FBURL + 'rooms/' + roomKey + '/gameStatus/scores/' + team + '/words')).$loaded().then(function (teamScore) {
+        teamScore.$add(wordKey);
+        deferred.resolve();
       });
       return deferred.promise;
     }

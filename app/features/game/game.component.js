@@ -24,6 +24,7 @@
       vm.numPlayerStarted = 0;
       vm.isPlaying = false;
       vm.getWordIndex = false;
+      vm.user = {};
 
       vm.$onInit = $onInit;
       vm.getWord = getWord;
@@ -37,12 +38,14 @@
       vm.nextPlayersTurn = nextPlayersTurn;
       vm.isLastPlayer = isLastPlayer;
       vm.goBackToRoom = goBackToRoom;
+      vm.getScore = getScore;
 
       function $onInit() {
           vm.isLoading = true;
 
           Rooms.getRoom($stateParams.roomId).then(function(obj){
               vm.room = obj;
+              _.set(vm.user, 'team',vm.room.players[$stateParams.userId].team);
           });
       }
 
@@ -74,6 +77,7 @@
           if (vm.index == _.values(vm.room.tempWords).length-1) {
             vm.index = 0;
           }
+          Rooms.updateScore($stateParams.roomId, vm.room.tempWords[vm.wordKey].word,vm.user.team)
         });
 
       }
@@ -150,9 +154,14 @@
         Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'inGame', false).then(function () {
           Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', false);
           Rooms.changeNewGameStatus($stateParams.roomId);
+          Rooms.updateGameStatus($stateParams.roomId, 'scores', '');
           $state.go('room', { roomId: $stateParams.roomId, user: $stateParams.user, userId: $stateParams.userId });
         });
 
+      }
+
+      function getScore() {
+        return [_.values(_.get(vm.room, 'gameStatus.scores.teamOne.words')).length, _.values(_.get(vm.room, 'gameStatus.scores.teamTwo.words')).length];
       }
 
     }
