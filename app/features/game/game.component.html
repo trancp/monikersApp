@@ -12,7 +12,7 @@
 
   </div>
   <div ng-if="$ctrl.room.gameStatus.timer">
-    <timer class="game-timer" interval="1000" countdown="2">{{countdown}}</timer>
+    <timer class="game-timer" interval="1000" countdown="60">{{countdown}}</timer>
   </div>
   <div ng-if="!$ctrl.room.gameStatus.timer && $ctrl.isPlayersTurn() && !$ctrl.room.gameStatus.endTurn">
     <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.startTimer()">Start Timer</md-button>
