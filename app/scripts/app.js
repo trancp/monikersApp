@@ -43,4 +43,5 @@ angular
     $mdIconProvider
       .icon('key', 'icons/key.svg')
       .icon('remove', 'icons/remove.svg')
+      .icon('checkmark', 'icons/checkmark.svg')
   }]);
