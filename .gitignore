@@ -5,3 +5,4 @@ dist
 bower_components
 .idea/
 app/partialTemplates
+.DS_Store
