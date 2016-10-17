@@ -1,82 +1,57 @@
-'use strict';
+(function () {
+    'use strict';
 
-angular
-    .module('monikersApp')
-    .component('createRoom', createRoom());
+    angular
+        .module('monikersApp')
+        .component('createRoom', createRoom());
 
-function createRoom() {
-    var component = {
-        templateUrl: '../app/features/create/create.component.html',
-        controller: CreateRoomController
-    };
+    function createRoom() {
+        var component = {
+            templateUrl: '../app/features/create/create.component.html',
+            controller: CreateRoomController
+        };
 
-    return component;
-}
+        return component;
+    }
 
-CreateRoomController.$inject = ['$firebaseArray', '$state', 'Ref', 'Rooms', 'Users'];
+    CreateRoomController.$inject = [
+        '$state',
+        'roomsService',
+        '_'
+    ];
 
-function CreateRoomController($firebaseArray, $state, Ref, Rooms, Users) {
-    var vm = this;
-    var roomCodeLength = 6;
+    function CreateRoomController($state, roomsService, _) {
+        const vm = this;
 
-    vm.user = {};
-    vm.room = {};
-    vm.listOfRooms = [];
-    vm.isLoading = false;
+        vm.user = {};
 
-    vm.createGame = createGame;
-    vm.roomCapacity = roomCapacity;
-    vm.generateRoomCode = generateRoomCode;
+        vm.isLoading = false;
 
-    function createGame() {
-        if (!vm.user.name) {
-            return;
-        }
-
-        vm.isLoading = true;
-
-        Rooms.all.$loaded().then(function (listOfRooms) {
-            if (roomCapacity(listOfRooms.length, roomCodeLength)) {
-                return;
-            }
-            vm.room.code = generateRoomCode(listOfRooms, roomCodeLength);
-            Rooms
-                .add(vm.room.code)
-                .then(_addPlayerToRoom);
+        _.assign(vm, {
+            createGame
         });
 
-    }
+        function createGame() {
+            if (!vm.user.userName) {
+                return;
+            }
 
-    function _addPlayerToRoom(roomKey) {
-        Rooms
-            .addPlayer(roomKey, vm.user.name)
-            .then(function (userKey) {
-                $state.go('room', {roomId: roomKey, user: vm.user.name, userId: userKey});
-            });
-    }
+            vm.isLoading = true;
 
-    function roomCapacity(listOfRooms, codeLength) {
-        if (listOfRooms >= Math.pow(10, codeLength)) {
-            console.log('No more rooms available');
-            return true;
+            roomsService
+                .createRoom(vm.user.userName)
+                .then(response => {
+                    const userData = {
+                        _id: response._id,
+                        roomId: response.roomId
+                    };
+                    _.assign(vm.user, userData);
+                    $state.go('room', {
+                        roomId: response.roomId,
+                        userName: vm.user.userName,
+                        userId: response._id
+                    });
+                });
         }
     }
-
-    function generateRoomCode(listOfRooms, codeLength) {
-        var code = '';
-        while ('' === code) {
-            for (var i = 0; i < codeLength; i++) {
-                code += Math.floor((Math.random() * 10)).toString();
-            }
-            for (var j = 0; j < listOfRooms.length; j++) {
-                if (listOfRooms[j].code === code) {
-                    code = '';
-                    return;
-                }
-            }
-        }
-        return code;
-    }
-}
-
-
+})();

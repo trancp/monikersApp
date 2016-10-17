@@ -1,46 +1,51 @@
-'use strict';
+(function () {
+    'use strict';
 
-angular
-  .module('monikersApp')
-  .component('joinRoom', joinRoom());
+    angular
+        .module('monikersApp')
+        .component('joinRoom', joinRoom());
 
-function joinRoom() {
-  var component = {
-    templateUrl: '../app/features/join/join.component.html',
-    controller: JoinRoomController
-  };
+    function joinRoom() {
+        var component = {
+            templateUrl: '../app/features/join/join.component.html',
+            controller: JoinRoomController
+        };
 
-  return component;
-}
-
-JoinRoomController.$inject = ['$state', 'Rooms'];
-
-function JoinRoomController($state, Rooms) {
-  var vm = this;
-
-    vm.form = {roomCode: '', userName: ''};
-
-    vm.joinRoom = joinRoom;
-
-  function joinRoom() {
-
-    if (!vm.form.userName || !vm.form.roomCode){
-      return;
+        return component;
     }
 
-        Rooms.exists(vm.form.roomCode).then(function (roomExists) {
-            if (!roomExists.exists) {
+    JoinRoomController.$inject = [
+        '$state',
+        'roomsService',
+        '_'
+    ];
+
+    function JoinRoomController($state, roomsService, _) {
+        const vm = this;
+
+        vm.user = {};
+
+        _.assign(vm, {
+            joinRoom
+        });
+
+        function joinRoom() {
+            if (!_.get(vm, 'user.userName') || !_.get(vm, 'user.roomCode')) {
                 return;
             }
-            _joinExistingRoom(roomExists.roomId, vm.form.userName);
-        });
-    }
 
-    function _joinExistingRoom(roomKey, username) {
-        Rooms
-            .joinExistingRoom(roomKey, username)
-            .then(function (userKey) {
-                $state.go('room', {roomId: roomKey, user: username, userId: userKey});
-            });
+            roomsService
+                .joinRoom(vm.user.roomCode, vm.user.userName)
+                .then(response => {
+                    vm.user.userId = response._id;
+
+                    $state.go('room', {
+                        roomId: response.roomId,
+                        userName: vm.user.userName,
+                        userId: response._id
+                    });
+                });
+        }
     }
-}
+})();
+
