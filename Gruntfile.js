@@ -403,6 +403,37 @@ module.exports = function (grunt) {
                 }
             }
         },
+        babel: {
+            options: {
+                sourceMap: true
+            },
+            server: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.app %>',
+                        src: [
+                            '**/*.js',
+                            '!bower_components/**/*.js',
+                            '!partialTemplates/*.js'
+                        ],
+                        dest: '<%= yeoman.dist %>'
+                    }
+                ]
+            },
+            dist: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: '.tmp/',
+                        src: [
+                            'concat/scripts/scripts.js'
+                        ],
+                        dest: '.tmp/'
+                    }
+                ]
+            }
+        },
 
         // Test settings
         karma: {
@@ -427,7 +458,8 @@ module.exports = function (grunt) {
             'autoprefixer:server',
             'html2js',
             'connect:livereload',
-            'watch'
+            'watch',
+            'babel:server'
         ]);
     });
 
@@ -461,12 +493,15 @@ module.exports = function (grunt) {
         'uglify',
         'filerev',
         'usemin',
-        'htmlmin'
+        'htmlmin',
+        'babel:dist'
+
     ]);
 
     grunt.registerTask('default', [
         'newer:jshint',
         'test',
-        'build'
+        'build',
+        'babel'
     ]);
 };
