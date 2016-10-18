@@ -15,12 +15,15 @@
     }
 
     JoinRoomController.$inject = [
+        '$localStorage',
+        '$sessionStorage',
         '$state',
         'roomsService',
+        'userService',
         '_'
     ];
 
-    function JoinRoomController($state, roomsService, _) {
+    function JoinRoomController($localStorage, $sessionStorage, $state, roomsService, userService, _) {
         const vm = this;
 
         vm.user = {};
@@ -37,14 +40,17 @@
             roomsService
                 .joinRoom(vm.user.roomCode, vm.user.userName)
                 .then(response => {
-                    vm.user.userId = response._id;
-
+                    $localStorage._id = response._id;
+                    _createNewUser(response._id, vm.user.userName, response.roomId, false);
                     $state.go('room', {
-                        roomId: response.roomId,
-                        userName: vm.user.userName,
-                        userId: response._id
+                        roomCode: vm.user.roomCode,
+                        userName: vm.user.userName
                     });
                 });
+        }
+
+        function _createNewUser(userId, userName, roomId, gameMaster) {
+            userService.createUser(userId, userName, roomId, gameMaster);
         }
     }
 })();

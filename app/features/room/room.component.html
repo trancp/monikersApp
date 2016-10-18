@@ -1,101 +1,101 @@
-<h1>{{ $ctrl.room.roomCode }}</h1>
-<md-list>
-  <div class="switch-teams">
-    <md-button class="btn-switch-teams md-raised" ng-click="$ctrl.switchTeams()">SWITCH TEAMS</md-button>
-  </div>
-  <div class="team-list">
-    <span class="col-team-one" >
-      <div class="team-label">Team One</div>
-      <div ng-repeat="player in $ctrl.room.players track by $index">
-        <div ng-if="player.team === 'Team One'">
-          <span ng-if="player.submittedWords"><md-icon md-svg-icon="checkmark" aria-label="submitted"></md-icon></span>
-          <span class="user-label">{{ player.username }}</span>
-          <span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master"></md-icon></span>
-          <span ng-if="$ctrl.participantIsMaster()">
-            <span ng-if="!player.isMaster"><md-icon md-svg-icon="remove" aria-label="remove" ng-click="$ctrl.removeUser($index)"></md-icon></span>
-          </span>
-        </div>
-    </div>
-    </span>
-    <span class="col-team-two">
-          <div class="team-label">Team Two</div>
-      <div  ng-repeat="player in $ctrl.room.players track by $index">
-    <div ng-if="player.team === 'Team Two'">
-          <span ng-if="player.submittedWords"><md-icon md-svg-icon="checkmark" aria-label="submitted"></md-icon></span>
-          <span class="user-label">{{player.username }}</span>
-          <span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master""></md-icon></span>
-          <span ng-if="$ctrl.participantIsMaster()">
-            <span ng-if="!player.isMaster"><md-icon md-svg-icon="remove" aria-label="remove" ng-click="$ctrl.removeUser($index)"></md-icon></span>
-          </span>
-    </div>
-    </div>
-    </span>
+<!--<h1>{{ $ctrl.room.roomCode }}</h1>-->
+<!--<md-list>-->
+  <!--<div class="switch-teams">-->
+    <!--<md-button class="btn-switch-teams md-raised" ng-click="$ctrl.switchTeams()">SWITCH TEAMS</md-button>-->
+  <!--</div>-->
+  <!--<div class="team-list">-->
+    <!--<span class="col-team-one" >-->
+      <!--<div class="team-label">Team One</div>-->
+      <!--<div ng-repeat="player in $ctrl.room.players track by $index">-->
+        <!--<div ng-if="player.team === 'Team One'">-->
+          <!--<span ng-if="player.submittedWords"><md-icon md-svg-icon="checkmark" aria-label="submitted"></md-icon></span>-->
+          <!--<span class="user-label">{{ player.username }}</span>-->
+          <!--<span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master"></md-icon></span>-->
+          <!--<span ng-if="$ctrl.participantIsMaster()">-->
+            <!--<span ng-if="!player.isMaster"><md-icon md-svg-icon="remove" aria-label="remove" ng-click="$ctrl.removeUser($index)"></md-icon></span>-->
+          <!--</span>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--</span>-->
+    <!--<span class="col-team-two">-->
+          <!--<div class="team-label">Team Two</div>-->
+      <!--<div  ng-repeat="player in $ctrl.room.players track by $index">-->
+    <!--<div ng-if="player.team === 'Team Two'">-->
+          <!--<span ng-if="player.submittedWords"><md-icon md-svg-icon="checkmark" aria-label="submitted"></md-icon></span>-->
+          <!--<span class="user-label">{{player.username }}</span>-->
+          <!--<span ng-if="player.isMaster"><md-icon md-svg-icon="key" aria-label="master""></md-icon></span>-->
+          <!--<span ng-if="$ctrl.participantIsMaster()">-->
+            <!--<span ng-if="!player.isMaster"><md-icon md-svg-icon="remove" aria-label="remove" ng-click="$ctrl.removeUser($index)"></md-icon></span>-->
+          <!--</span>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</span>-->
 
-  </div>
-</md-list>
+  <!--</div>-->
+<!--</md-list>-->
 
-<div class="form-submit" ng-if="!(vm.submitted || vm.isSubmitted())">
-  <form ng-submit="$ctrl.submitWords()" ng-if="!$ctrl.submitted">
-    <h4 style="margin: 0;">Submit 5 Words!</h4>
-    <div class="word-one">
-      <md-input-container>
-        <label class="word-label">1)</label>
-        <input type="text" ng-model="$ctrl.form.wordOne" autofocus/>
-      </md-input-container>
-    </div>
-    <div>
-      <md-input-container>
-        <label class="word-label">2)</label>
-        <input type="text" ng-model="$ctrl.form.wordTwo" autofocus/>
-      </md-input-container>
-    </div>
-    <div>
-      <md-input-container>
-        <label class="word-label">3)</label>
-        <input type="text" ng-model="$ctrl.form.wordThree" autofocus/>
-      </md-input-container>
-    </div>
-    <div>
-      <md-input-container>
-        <label class="word-label">4)</label>
-        <input type="text" ng-model="$ctrl.form.wordFour" autofocus/>
-      </md-input-container>
-    </div>
-    <div>
-      <md-input-container>
-        <label class="word-label">5)</label>
-        <input type="text" ng-model="$ctrl.form.wordFive" autofocus/>
-      </md-input-container>
-    </div>
-    <div>
-      <md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.submitWords()">
-        Submit
-      </md-button>
-    </div>
-  </form>
+<!--<div class="form-submit" ng-if="!(vm.submitted || vm.isSubmitted())">-->
+  <!--<form ng-submit="$ctrl.submitWords()" ng-if="!$ctrl.submitted">-->
+    <!--<h4 style="margin: 0;">Submit 5 Words!</h4>-->
+    <!--<div class="word-one">-->
+      <!--<md-input-container>-->
+        <!--<label class="word-label">1)</label>-->
+        <!--<input type="text" ng-model="$ctrl.form.wordOne" autofocus/>-->
+      <!--</md-input-container>-->
+    <!--</div>-->
+    <!--<div>-->
+      <!--<md-input-container>-->
+        <!--<label class="word-label">2)</label>-->
+        <!--<input type="text" ng-model="$ctrl.form.wordTwo" autofocus/>-->
+      <!--</md-input-container>-->
+    <!--</div>-->
+    <!--<div>-->
+      <!--<md-input-container>-->
+        <!--<label class="word-label">3)</label>-->
+        <!--<input type="text" ng-model="$ctrl.form.wordThree" autofocus/>-->
+      <!--</md-input-container>-->
+    <!--</div>-->
+    <!--<div>-->
+      <!--<md-input-container>-->
+        <!--<label class="word-label">4)</label>-->
+        <!--<input type="text" ng-model="$ctrl.form.wordFour" autofocus/>-->
+      <!--</md-input-container>-->
+    <!--</div>-->
+    <!--<div>-->
+      <!--<md-input-container>-->
+        <!--<label class="word-label">5)</label>-->
+        <!--<input type="text" ng-model="$ctrl.form.wordFive" autofocus/>-->
+      <!--</md-input-container>-->
+    <!--</div>-->
+    <!--<div>-->
+      <!--<md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.submitWords()">-->
+        <!--Submit-->
+      <!--</md-button>-->
+    <!--</div>-->
+  <!--</form>-->
 
-</div>
+<!--</div>-->
 
-<div ng-if="$ctrl.isSubmitted()" class="element-centered" >
-  <div>Waiting for everyone to submit words</div>
-  <md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.deleteSubmitWords()">
-    Edit Submissions
-  </md-button>
-</div>
-
-
-<div class="element-centered">
-  <md-button ng-if="$ctrl.readyToStart()" class="md-raised md-primary" ng-click="$ctrl.startGame()">
-    Start
-  </md-button>
-</div>
+<!--<div ng-if="$ctrl.isSubmitted()" class="element-centered" >-->
+  <!--<div>Waiting for everyone to submit words</div>-->
+  <!--<md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.deleteSubmitWords()">-->
+    <!--Edit Submissions-->
+  <!--</md-button>-->
+<!--</div>-->
 
 
-<div class="btn-back element-centered">
-  <a href="/"
-  ng-click="$ctrl.removeUser()">
-    Back
-  </a>
-</div>
+<!--<div class="element-centered">-->
+  <!--<md-button ng-if="$ctrl.readyToStart()" class="md-raised md-primary" ng-click="$ctrl.startGame()">-->
+    <!--Start-->
+  <!--</md-button>-->
+<!--</div>-->
+
+
+<!--<div class="btn-back element-centered">-->
+  <!--<a href="/"-->
+  <!--ng-click="$ctrl.removeUser()">-->
+    <!--Back-->
+  <!--</a>-->
+<!--</div>-->
 
 

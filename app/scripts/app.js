@@ -9,7 +9,8 @@
             'ui.router',
             'ngMaterial',
             'templates-main',
-            'timer'
+            'timer',
+            'ngStorage'
         ])
         .config([
             '$urlRouterProvider',
@@ -31,11 +32,19 @@
                         template: '<join-room></join-room>'
                     })
                     .state('room', {
-                        url: '/room/:roomId?userName?userId',
-                        template: '<room></room>'
+                        url: '/room/:roomCode/:userName',
+                        template: '<room></room>',
+                        resolve: {
+                            roomData: ['$stateParams','roomsService', function ($stateParams, roomsService) {
+                                return roomsService.getRoomByCode($stateParams.roomCode);
+                            }],
+                            userDate: ['$localStorage','userService', function ($localStorage, userService) {
+                                return userService.getUserById($localStorage._id);
+                            }]
+                        }
                     })
                     .state('game', {
-                        url: '/game/:roomId?userName?userId',
+                        url: '/game/:roomCode/:userName',
                         template: '<game></game>'
                     });
 

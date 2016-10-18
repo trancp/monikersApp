@@ -15,12 +15,15 @@
     }
 
     CreateRoomController.$inject = [
+        '$localStorage',
+        '$sessionStorage',
         '$state',
         'roomsService',
+        'userService',
         '_'
     ];
 
-    function CreateRoomController($state, roomsService, _) {
+    function CreateRoomController($localStorage, $sessionStorage, $state, roomsService, userService, _) {
         const vm = this;
 
         vm.user = {};
@@ -41,17 +44,17 @@
             roomsService
                 .createRoom(vm.user.userName)
                 .then(response => {
-                    const userData = {
-                        _id: response._id,
-                        roomId: response.roomId
-                    };
-                    _.assign(vm.user, userData);
+                    $localStorage._id = response._id;
+                    _createNewUser(response._id, vm.user.userName, response.roomId, true);
                     $state.go('room', {
-                        roomId: response.roomId,
+                        roomCode: response.roomCode,
                         userName: vm.user.userName,
-                        userId: response._id
                     });
                 });
+        }
+
+        function _createNewUser(userId, userName, roomId, gameMaster) {
+            userService.createUser(userId, userName, roomId, gameMaster);
         }
     }
 })();

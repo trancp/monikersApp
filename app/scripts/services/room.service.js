@@ -15,10 +15,12 @@
 
     function roomsService($firebaseArray, $firebaseObject, $q, FBURL, _) {
         const ROOM_CODE_LENGTH = 6;
-        const rooms = [];
+        let roomData = [];
         const ROOMS_REF = new Firebase(FBURL + 'rooms');
         const roomsService = {
             createRoom,
+            get,
+            getRoomByCode,
             joinRoom
         };
 
@@ -26,27 +28,35 @@
 
         function createRoom(userName) {
             const deferred = $q.defer();
-            _getRooms()
-                .then(allRooms => {
-                    if (_isRoomAtCapacity(allRooms)) {
-                        return;
-                    }
-                    const roomCode = _generateRoomCode(allRooms);
-                    _addNewRoom(roomCode).then(roomId => {
-                        _addPlayerToRoom(roomId, userName)
-                            .then(userId => deferred.resolve({ _id: userId, roomId }));
-                    });
+            const newUserObjectPromise = _getRooms()
+                .then(rooms => _createNewRoomCode(rooms))
+                .then(roomCode => _addNewRoom(roomCode))
+                .then(roomInfo => _addPlayerToRoom(roomInfo.roomId, roomInfo.roomCode, userName));
+            deferred.resolve(newUserObjectPromise);
+            return deferred.promise;
+        }
+
+        function get() {
+            return roomData;
+        }
+
+        function getRoomByCode(roomCode) {
+            const deferred = $q.defer();
+            $firebaseObject(ROOMS_REF)
+                .$loaded()
+                .then(rooms => {
+                    const roomKey = _.findKey(rooms, room => _.get(room, 'roomCode') === roomCode);
+                    roomData = rooms[roomKey];
+                    deferred.resolve(roomKey);
                 });
             return deferred.promise;
         }
 
         function joinRoom(roomCode, userName) {
             const deferred = $q.defer();
-            _getRoomByCode(roomCode)
-                .then(roomId => {
-                    _addPlayerToRoom(roomId, userName)
-                        .then(userId => deferred.resolve({ _id: userId, roomId }));
-                });
+            const newUserObjectPromise = getRoomByCode(roomCode)
+                .then(roomId => _addPlayerToRoom(roomId, roomCode, userName));
+            deferred.resolve(newUserObjectPromise);
             return deferred.promise;
         }
 
@@ -66,34 +76,33 @@
                     }
                 })
                 .then(roomId => {
-                    deferred.resolve(roomId.key());
+                    deferred.resolve({
+                        roomId: roomId.key(),
+                        roomCode
+                    });
                 });
             return deferred.promise;
         }
 
-        function _addPlayerToRoom(roomId, userName) {
+        function _addPlayerToRoom(roomId, roomCode, userName) {
             const deferred = $q.defer();
             $firebaseArray(new Firebase(`${FBURL}rooms/${roomId}/players`))
                 .$add({
                     userName
                 })
-                .then(userId => deferred.resolve(userId.key()));
+                .then(userId => deferred.resolve({
+                    _id: userId.key(),
+                    roomCode,
+                    roomId
+                }));
             return deferred.promise;
         }
 
-        function get() {
-            return rooms;
-        }
-
-        function _getRoomByCode(roomCode) {
-            const deferred = $q.defer();
-            $firebaseObject(ROOMS_REF)
-                .$loaded()
-                .then(rooms => {
-                    const room = _.findKey(rooms, room => _.get(room, 'roomCode') === roomCode);
-                    deferred.resolve(room);
-                });
-            return deferred.promise;
+        function _createNewRoomCode(rooms) {
+            if (_isRoomAtCapacity(rooms)) {
+                return;
+            }
+            return _findUnexistingRoomCode(rooms);
         }
 
         function _getRooms() {
@@ -108,7 +117,7 @@
             return rooms.length >= Math.pow(10, ROOM_CODE_LENGTH);
         }
 
-        function _generateRoomCode(rooms) {
+        function _findUnexistingRoomCode(rooms) {
             let generatedRoomCode = '';
             while ('' === generatedRoomCode) {
                 generatedRoomCode = Math.floor((Math.random() * Math.pow(10, ROOM_CODE_LENGTH))).toString();
