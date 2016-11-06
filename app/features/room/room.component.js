@@ -29,127 +29,120 @@
     function RoomComponentController($localStorage, $q, $sessionStorage, $state, $stateParams, Rooms, roomsService, userService, _) {
         const vm = this;
         const USER_ID = $localStorage._id;
+        const NUM_OF_WORDS = 5;
 
         vm.isLoading = false;
         vm.room = {};
         vm.form = {};
         vm.submitted = false;
         vm.wordArray = [];
-        vm.playerArray = [];
         vm.wordsToSubmit = [];
         vm.user = {};
+        vm.teamsLabels = {'Team One': true, 'Team Two': false};
+        vm.players = [];
 
         _.assign(vm, {
-            $onInit
-            // submitWords,
-            // startGame,
-            // readyToStart,
-            // team,
-            // switchTeams,
-            // isUser,
-            // isSubmitted,
-            // participantIsMaster,
-            // deleteSubmitWords,
-            // removeUser
+            $onInit,
+            editSubmittedWords,
+            getPlayers,
+            isGameReadyToStart,
+            isGameStarted,
+            hasSubmitted,
+            submitWords,
+            participantIsMaster,
+            removeUser,
+            startGame,
+            switchTeams
         });
 
         function $onInit() {
             vm.isLoading = true;
 
-            const roomData = roomsService.get();
-            const roomPlayers = _.get(roomData, 'players');
-            vm.isUser = _.has(roomPlayers, USER_ID);
-            if(!vm.isUser) {
+            vm.roomData = roomsService.get();
+            vm.roomPlayerIds = _.get(vm, 'roomData.players');
+            vm.isUser = _.has(vm.roomPlayerIds, USER_ID);
+            if (!vm.isUser) {
                 return;
             }
             vm.user = userService.get();
-
-            // Rooms.getRoom($stateParams.roomId).then(function (obj) {
-            //     vm.room = obj;
-            //     vm.user = vm.room.players[$stateParams.userId];
-            //     vm.submitted = _.get(vm.user, 'submittedWords');
-            // });
+            vm.form = _generateEmptyForm(NUM_OF_WORDS);
+            _updateGameStatus(vm.user.roomId, 'numOfWords', NUM_OF_WORDS);
+            roomsService.getRoomData(vm.user.roomId).then(room => _.set(vm, 'roomData', room));
+            userService.getUserData(USER_ID).then(user => _.set(vm, 'user', user));
         }
 
-        //     function submitWords() {
-        //         if (!vm.form.wordOne
-        //             || !vm.form.wordTwo
-        //             || !vm.form.wordThree
-        //             || !vm.form.wordFour
-        //             || !vm.form.wordFive) {
-        //             return;
-        //         }
-        //
-        //         vm.wordsToSubmit.push(vm.form.wordOne);
-        //         vm.wordsToSubmit.push(vm.form.wordTwo);
-        //         vm.wordsToSubmit.push(vm.form.wordThree);
-        //         vm.wordsToSubmit.push(vm.form.wordFour);
-        //         vm.wordsToSubmit.push(vm.form.wordFive);
-        //
-        //         _.forEach(vm.wordsToSubmit, function (word) {
-        //             Rooms
-        //                 .addWord($stateParams.roomId, word, $stateParams.userId);
-        //         });
-        //
-        //         Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'submittedWords', true).then(function () {
-        //             vm.submitted = true;
-        //             vm.wordsToSubmit = [];
-        //
-        //         });
-        //     }
-        //
-        //     function startGame() {
-        //         Rooms.updatePlayersStatus($stateParams.roomId, $stateParams.userId, 'inGame', true);
-        //         Rooms.checkIfEveryoneIsInGame($stateParams.roomId);
-        //         $state.go('game', {roomId: $stateParams.roomId, user: $stateParams.user, userId: $stateParams.userId});
-        //     }
-        //
-        //     function readyToStart() {
-        //
-        //         try {
-        //             var equalTeams = _.values(vm.room.teams.teamOne).length === _.values(vm.room.teams.teamTwo).length;
-        //             var enoughWords = _.values(vm.room.players).length * 5 === _.values(vm.room.words).length;
-        //             return equalTeams && enoughWords;
-        //         }
-        //         catch (error) {
-        //
-        //         }
-        //     }
-        //
-        //     function team(playerIndex) {
-        //         return _.values(vm.room.players)[playerIndex].team;
-        //     }
-        //
-        //     function switchTeams() {
-        //         Rooms.switchTeams($stateParams.roomId, $stateParams.userId, vm.user.team);
-        //         vm.user.team = vm.user.team == 'Team One' ? 'Team Two' : 'Team One';
-        //     }
-        //
-        //     function isUser(playerIndex) {
-        //         return _.keys(vm.room.players)[playerIndex] === $stateParams.userId;
-        //     }
-        //
-        //     function isSubmitted() {
-        //         return _.get(vm.room, 'players.' + $stateParams.userId + '.submittedWords');
-        //     }
-        //
-        //     function participantIsMaster() {
-        //         return vm.room.gameStatus.roomMaster === $stateParams.userId;
-        //     }
-        //
-        //     function deleteSubmitWords() {
-        //         vm.submitted = false;
-        //         Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, $stateParams.userId, 'staying');
-        //     }
-        //
-        //     function removeUser(playerIndex) {
-        //         var userIdToRemove = playerIndex ? _.keys(vm.room.players)[playerIndex] : $stateParams.userId;
-        //         Rooms.getWordsSubmittedByUserAndRemove($stateParams.roomId, userIdToRemove, 'leaving');
-        //         var userTeamToRemove = vm.room.players[userIdToRemove].team;
-        //         Rooms.removeUserFromTeam($stateParams.roomId, userTeamToRemove, userIdToRemove);
-        //         Rooms.removeUser($stateParams.roomId, '/players/', userIdToRemove);
-        //
-        //     }
-        // }
+        function isGameReadyToStart() {
+            return _.get(vm, 'roomData.status.readyToStart');
         }
+
+        function isGameStarted() {
+            return _.get(vm, 'roomData.status.started')
+            ? $state.go('game', { roomCode: vm.roomData.roomCode, userName: vm.user.userName })
+            : '';
+        }
+
+        function editSubmittedWords() {
+            roomsService.removeWords(vm.user.roomId, USER_ID);
+            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', false);
+        }
+
+        function getPlayers() {
+            return _.get(vm, 'roomData.players');
+        }
+
+        function hasSubmitted() {
+            return vm.submitted || _.get(vm, 'user.status.submitted') || _.get(vm, `roomData.players[${USER_ID}].submitted`);
+        }
+
+        function participantIsMaster() {
+            return _.get(vm, 'roomData.status.roomMaster') === USER_ID;
+        }
+
+        function removeUser(playerId) {
+            roomsService.removePlayer(vm.user.roomId, playerId);
+            userService.removeUser(playerId);
+        }
+
+        function startGame() {
+            _updateGameStatus(vm.user.roomId, 'started', true);
+        }
+
+        function submitWords() {
+            const hasEmptyFormField = _hasEmptyFormFields(vm.form);
+            if (hasEmptyFormField) {
+                return;
+            }
+            roomsService.submitWords(vm.user.roomId, USER_ID, vm.form);
+            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', true);
+        }
+
+        function switchTeams() {
+            _updatePlayerStatus(vm.user.roomId, USER_ID, 'teamOne', !vm.user.status.teamOne);
+            _updateUserStatus(USER_ID, 'teamOne', !vm.user.status.teamOne);
+        }
+
+        function _generateEmptyForm(numOfWords) {
+            const form = {};
+            for (let i = 0; i < numOfWords; i++) {
+                form[`${i}`] = '';
+            }
+            return form;
+        }
+
+        function _hasEmptyFormFields(form) {
+            return NUM_OF_WORDS !== _.compact(_.values(form)).length;
+        }
+
+        function _updateGameStatus(roomId, statusField, newStatus) {
+            roomsService.updateGameStatus(roomId, statusField, newStatus);
+        }
+
+        function _updatePlayerStatus(roomId, userId, statusField, newStatus) {
+            roomsService.updatePlayerStatus(roomId, userId, statusField, newStatus);
+        }
+
+        function _updateUserStatus(userId, statusField, newStatus) {
+            userService.updateUserStatus(userId, statusField, newStatus);
+        }
+    }
 })();

@@ -19,7 +19,10 @@
         const userService = {
             createUser,
             get,
-            getUserById
+            getUserById,
+            getUserData,
+            removeUser,
+            updateUserStatus
         };
 
         return userService;
@@ -39,6 +42,31 @@
                 .then(users => {
                     userData = users[userId];
                     deferred.resolve(userData);
+                });
+            return deferred.promise;
+        }
+
+        function getUserData(userId) {
+            return $firebaseObject(new Firebase(`${FBURL}/users/${userId}`))
+                .$loaded();
+        }
+
+        function removeUser(userId) {
+            $firebaseObject(new Firebase(`${FBURL}users/${userId}`))
+                .$loaded()
+                .then(user => {
+                    user.$remove();
+                });
+        }
+
+        function updateUserStatus(userId, statusField, newStatus) {
+            const deferred = $q.defer();
+            $firebaseObject(new Firebase(`${FBURL}users/${userId}`))
+                .$loaded()
+                .then(user => {
+                    _.set(user, `status.${statusField}`, newStatus);
+                    user.$save();
+                    deferred.resolve(user);
                 });
             return deferred.promise;
         }
