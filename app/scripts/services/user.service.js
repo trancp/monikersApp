@@ -34,11 +34,11 @@
 
         function getUserById(userId) {
             const deferred = $q.defer();
-            $firebaseObject(new Firebase(`${FBURL}/users/${userId}`))
+            $firebaseObject(new Firebase(`${FBURL}/users`))
                 .$loaded()
-                .then(user => {
-                    userData = user;
-                    deferred.resolve(user);
+                .then(users => {
+                    userData = users[userId];
+                    deferred.resolve(userData);
                 });
             return deferred.promise;
         }
