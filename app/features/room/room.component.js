@@ -17,6 +17,7 @@
     RoomComponentController.$inject = [
         '$localStorage',
         '$q',
+        '$rootScope',
         '$sessionStorage',
         '$state',
         '$stateParams',
@@ -26,7 +27,7 @@
         '_'
     ];
 
-    function RoomComponentController($localStorage, $q, $sessionStorage, $state, $stateParams, Rooms, roomsService, userService, _) {
+    function RoomComponentController($localStorage, $q, $rootScope, $sessionStorage, $state, $stateParams, Rooms, roomsService, userService, _) {
         const vm = this;
         const USER_ID = $localStorage._id;
         const NUM_OF_WORDS = 5;
@@ -45,6 +46,7 @@
             $onInit,
             editSubmittedWords,
             getPlayers,
+            isEvenTeams,
             isGameReadyToStart,
             isGameStarted,
             hasSubmitted,
@@ -66,19 +68,9 @@
             }
             vm.user = userService.get();
             vm.form = _generateEmptyForm(NUM_OF_WORDS);
-            _updateGameStatus(vm.user.roomId, 'numOfWords', NUM_OF_WORDS);
-            roomsService.getRoomData(vm.user.roomId).then(room => _.set(vm, 'roomData', room));
+            _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', NUM_OF_WORDS);
+            roomsService.getRoomData(_.get(vm, 'user.roomId')).then(room => _.set(vm, 'roomData', room));
             userService.getUserData(USER_ID).then(user => _.set(vm, 'user', user));
-        }
-
-        function isGameReadyToStart() {
-            return _.get(vm, 'roomData.status.readyToStart');
-        }
-
-        function isGameStarted() {
-            return _.get(vm, 'roomData.status.started')
-            ? $state.go('game', { roomCode: vm.roomData.roomCode, userName: vm.user.userName })
-            : '';
         }
 
         function editSubmittedWords() {
@@ -88,6 +80,20 @@
 
         function getPlayers() {
             return _.get(vm, 'roomData.players');
+        }
+
+        function isEvenTeams() {
+            const numPlayersOnTeamOne = _.filter(_.map(_.get(vm, 'roomData.players')), players => players.teamOne).length;
+            const numPlayersOnTeamTwo = _.filter(_.map(_.get(vm, 'roomData.players')), players => !players.teamOne).length;
+            return numPlayersOnTeamOne === numPlayersOnTeamTwo;
+        }
+
+        function isGameReadyToStart() {
+            return _.get(vm, 'roomData.status.readyToStart');
+        }
+
+        function isGameStarted() {
+            return _.get(vm, 'roomData.status.started', false);
         }
 
         function hasSubmitted() {
@@ -104,7 +110,8 @@
         }
 
         function startGame() {
-            _updateGameStatus(vm.user.roomId, 'started', true);
+            roomsService.startGame(vm.user.roomId, USER_ID);
+            $state.go('game', {roomCode: vm.roomData.roomCode, userName: vm.user.userName});
         }
 
         function submitWords() {

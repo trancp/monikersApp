@@ -63,14 +63,14 @@
 
 <div ng-if="$ctrl.hasSubmitted()" class="element-centered">
     <!--<div>Waiting for everyone to submit words</div>-->
-    <div ng-if="$ctrl.isGameStarted()"></div>
+    <!--<div ng-if="$ctrl.isGameStarted()"></div>-->
     <md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.editSubmittedWords()">
         Edit Submissions
     </md-button>
 </div>
 
 
-<div ng-if="$ctrl.isGameReadyToStart() && $ctrl.user.status.roomMaster"
+<div ng-if="$ctrl.isGameReadyToStart() && $ctrl.isEvenTeams()"
      class="element-centered">
     <md-button class="md-raised md-primary" ng-click="$ctrl.startGame()">
         Start

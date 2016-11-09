@@ -28,7 +28,7 @@
         return userService;
 
         function createUser(userId, userName, roomId, roomMaster) {
-            _addNewUser(userId, userName, roomId, roomMaster);
+            return _addNewUser(userId, userName, roomId, roomMaster);
         }
 
         function get() {
@@ -72,6 +72,7 @@
         }
 
         function _addNewUser(userId, userName, roomId, roomMaster) {
+            const deferred = $q.defer();
             const newUserObject = {};
             newUserObject[userId] = {
                 created_at: new Date().getTime(),
@@ -89,7 +90,9 @@
                 .then(users => {
                     _.assign(users, newUserObject);
                     users.$save();
+                    deferred.resolve(users);
                 });
+            return deferred.promise
         }
     }
 })();
