@@ -24,14 +24,11 @@
 
 .team-list {
   text-align: center; }
-  .team-list .col-team-one {
-    vertical-align: top;
-    display: inline-block;
-    padding: 10px; }
-  .team-list .col-team-two {
-    vertical-align: top;
-    display: inline-block;
-    padding: 10px; }
+
+.col-team {
+  vertical-align: top;
+  display: inline-block;
+  padding: 10px; }
 
 .team-label {
   font-size: 20px; }
