@@ -42,13 +42,13 @@
         function $onInit() {
             vm.isLoading = true;
 
-            vm.roomData = roomsService.get();
+            vm.roomData = roomsService.getRoom();
             vm.roomPlayerIds = _.get(vm, 'roomData.players');
             vm.isUser = _.has(vm.roomPlayerIds, USER_ID);
             if (!vm.isUser) {
                 return;
             }
-            vm.user = userService.get();
+            vm.user = userService.getUser();
             roomsService.getRoomData(vm.user.roomId).then(room => {
                 _.set(vm, 'roomData', room);
                 _.set(vm, 'isLoading', false);

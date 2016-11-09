@@ -18,7 +18,7 @@
         let userData;
         const userService = {
             createUser,
-            get,
+            getUser,
             getUserById,
             getUserData,
             removeUser,
@@ -31,7 +31,7 @@
             return _addNewUser(userId, userName, roomId, roomMaster);
         }
 
-        function get() {
+        function getUser() {
             return userData;
         }
 

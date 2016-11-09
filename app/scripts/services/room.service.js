@@ -41,7 +41,7 @@
         const ROOMS_REF = new Firebase(FBURL + 'rooms');
         const roomsService = {
             createRoom,
-            get,
+            getRoom,
             getRoomByCode,
             getRoomData,
             joinRoom,
@@ -69,7 +69,7 @@
             return deferred.promise;
         }
 
-        function get() {
+        function getRoom() {
             return roomData;
         }
 

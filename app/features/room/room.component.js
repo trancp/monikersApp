@@ -60,13 +60,13 @@
         function $onInit() {
             vm.isLoading = true;
 
-            vm.roomData = roomsService.get();
+            vm.roomData = roomsService.getRoom();
             vm.roomPlayerIds = _.get(vm, 'roomData.players');
             vm.isUser = _.has(vm.roomPlayerIds, USER_ID);
             if (!vm.isUser) {
                 return;
             }
-            vm.user = userService.get();
+            vm.user = userService.getUser();
             vm.form = _generateEmptyForm(NUM_OF_WORDS);
             _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', NUM_OF_WORDS);
             roomsService.getRoomData(_.get(vm, 'user.roomId')).then(room => _.set(vm, 'roomData', room));
