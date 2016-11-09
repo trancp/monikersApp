@@ -490,11 +490,11 @@ module.exports = function (grunt) {
         'copy:dist',
         'cdnify',
         'cssmin',
+        'babel:dist',
         'uglify',
         'filerev',
         'usemin',
-        'htmlmin',
-        'babel:dist'
+        'htmlmin'
 
     ]);
 
