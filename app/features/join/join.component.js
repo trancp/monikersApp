@@ -41,20 +41,22 @@
                 .joinRoom(vm.user.roomCode, vm.user.userName)
                 .then(response => {
                     $localStorage._id = response._id;
-                    _createNewUser(response._id, vm.user.userName, response.roomId, false);
-                    _setUpDefaultPlaterStatus(response.roomId, response._id);
-                    $state.go('room', {
-                        roomCode: vm.user.roomCode,
-                        userName: vm.user.userName
+                    _setUpDefaultPlayerStatus(response.roomId, response._id);
+                    _createNewUser(response._id, vm.user.userName, response.roomId, false).then(() => {
+                        $state.go('room', {
+                            roomCode: vm.user.roomCode,
+                            userName: vm.user.userName
+                        });
                     });
+
                 });
         }
 
         function _createNewUser(userId, userName, roomId, gameMaster) {
-            userService.createUser(userId, userName, roomId, gameMaster);
+            return userService.createUser(userId, userName, roomId, gameMaster);
         }
 
-        function _setUpDefaultPlaterStatus(roomId, userId) {
+        function _setUpDefaultPlayerStatus(roomId, userId) {
             roomsService.setUpDefaultPlayerStatus(roomId, userId);
         }
     }
