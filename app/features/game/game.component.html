@@ -1,68 +1,97 @@
-<div ng-if="!$ctrl.everyoneInGame() && !$ctrl.room.gameStatus.readyForNewGame">
-  Waiting for everyone to press start
+<div ng-if="!$ctrl.isEveryoneStarted() && !$ctrl.roomData.status.ended">
+    Waiting for everyone to press start
 </div>
 
-<div class="element-centered" ng-if="$ctrl.everyoneInGame()">
-  <div>
-    ROUND: {{ $ctrl.room.gameStatus.round }}
-  </div>
-  <div>
-    <span>Team One: {{$ctrl.getScore()[0]}} </span>
-    <span>Team Two: {{$ctrl.getScore()[1]}} </span>
-
-  </div>
-  <div ng-if="$ctrl.room.gameStatus.timer">
-    <timer class="game-timer" interval="1000" countdown="60">{{countdown}}</timer>
-  </div>
-  <div ng-if="!$ctrl.room.gameStatus.timer && $ctrl.isPlayersTurn() && !$ctrl.room.gameStatus.endTurn">
-    <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.startTimer()">Start Timer</md-button>
-  </div>
-  <div>
-    <h2>{{ $ctrl.room.gameStatus.teamTurn }}</h2>
-  </div>
-  <div>
-    <div ng-repeat="player in $ctrl.room.gameStatus.turnOrder track by $index">
-      <li ng-if="$index === $ctrl.room.gameStatus.playerTurn">
-        <h3>{{ $ctrl.getUserName(player.userId) }}</h3>
-      </li>
-      <li ng-if="$index !== $ctrl.room.gameStatus.playerTurn">
-        {{ $ctrl.getUserName(player.userId) }}
-      </li>
+<div class="element-centered" ng-if="$ctrl.isEveryoneStarted()">
+    <div>
+        ROUND: {{ $ctrl.roomData.status.round }}
     </div>
-  </div>
-  <div ng-if="$ctrl.isPlayersTurn()">
-    <div class="u-margin-30-0" ng-if="$ctrl.room.gameStatus.timer">
-      <md-button class="btn-game md-raised" ng-click="$ctrl.gotIt()">
-        Got it!
-      </md-button>
+    <div>
+        <span>Team One: {{$ctrl.roomData.status.score[0]}} </span>
+        <span>Team Two: {{$ctrl.roomData.status.score[1]}} </span>
     </div>
-    <div class="u-margin-30-0" ng-if="$ctrl.room.gameStatus.timer">
-      <h1 ng-if="!$ctrl.noWordsLeft()"> {{ $ctrl.getWord() }} </h1>
-      <h1 ng-if="$ctrl.noWordsLeft()"> NO MORE WORDS! </h1>
-      <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.nextWord()" ng-if="!$ctrl.room.gameStatus.endTurn">
-        Pass
-      </md-button>
+    <div ng-if="$ctrl.roomData.status.timer">
+        <timer class="game-timer" interval="1000" countdown="60">{{countdown}}</timer>
     </div>
-    <div class="u-margin-30-0" ng-if="$ctrl.room.gameStatus.endTurn">
-      <md-button ng-if="$ctrl.isLastPlayer()" class="btn-game md-primary" ng-click="$ctrl.nextRound()">
-        <span ng-if="!($ctrl.room.gameStatus.round === 3)">Next Round</span>
-        <span ng-if="($ctrl.room.gameStatus.round === 3)">New Game</span>
-      </md-button>
-
+    <div ng-if="!$ctrl.roomData.status.timer && $ctrl.isPlayersTurn()">
+        <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.startTimer()">Start Timer</md-button>
     </div>
-
-    <div class="u-margin-70-0-0" ng-if="$ctrl.room.gameStatus.endTurn">
-      <md-button ng-if="!$ctrl.isLastPlayer()" class="btn-game md-primary" ng-click="$ctrl.nextPlayersTurn()">
-        Next Player
-      </md-button>
+    <div>
+        <h2 ng-bind="$ctrl.currentTeamsTurn() ? 'Team One' : 'Team Two'"></h2>
     </div>
-  </div>
+    <div>
+        <div ng-repeat="player in $ctrl.roomData.status.turnOrder track by $index">
+            <li>
+              <span ng-if="player.turn">
+                  <h3 ng-bind="player.userName">
+                  </h3>
+              </span>
+                <span ng-if="!player.turn"
+                      ng-bind="player.userName">
+              </span>
+            </li>
+        </div>
+    </div>
+    <div ng-if="$ctrl.isPlayersTurn()">
+        <div class="u-margin-30-0" ng-if="$ctrl.roomData.status.timer">
+            <div class="u-margin-30-0">
+                <md-button class="btn-game md-raised"
+                           ng-click="$ctrl.gotIt()"
+                           ng-disabled="$ctrl.isLoading"
+                           ng-bind="'Got it!'">
+                </md-button>
+            </div>
+            <div class="u-margin-30-0">
+                <div ng-if="$ctrl.getActiveIndices().length">
+                    <div ng-if="1 === $ctrl.getActiveIndices().length"
+                         ng-bind="'(Last word)'"
+                         ng-style="{ 'vertical-align': '10px' }">
+                    </div>
+                    <div ng-bind="$ctrl.getWord()"
+                         ng-style="{ 'font-size': '50px', padding: '35px 0' }">
+                    </div>
+                </div>
+                <h1 ng-if="!$ctrl.getActiveIndices().length"
+                    ng-style="{ color: 'red' }"
+                    ng-bind="'NO MORE WORDS!'">
+                </h1>
+                <md-button class="btn-game md-raised md-primary"
+                           ng-click="$ctrl.passWord()"
+                           ng-disabled="$ctrl.isLoading"
+                           ng-bind="'Pass'">
+                </md-button>
+            </div>
+        </div>
+        <div class="u-margin-70-0-0"
+             ng-if="!$ctrl.isLastPlayerAndLastTurn()">
+            <md-button class="btn-game md-primary"
+                       ng-click="$ctrl.nextPlayersTurn()">
+                       <span ng-if="!$ctrl.isLastPlayer()"
+                             ng-bind="'Next Player'">
+                       </span>
+                <span ng-if="$ctrl.isLastPlayer()"
+                      ng-bind="'Next Round'">
+                       </span>
+            </md-button>
+        </div>
+        <div class="u-margin-70-0-0"
+             ng-if="$ctrl.isLastPlayerAndLastTurn()">
+            <md-button class="btn-game md-primary"
+                       ng-click="$ctrl.startNewGame()">
+                <span ng-bind="'New Game'">
+                </span>
+            </md-button>
+        </div>
+    </div>
 </div>
 
 <div>
-  <md-button ng-if="$ctrl.room.gameStatus.readyForNewGame" class="btn-game md-primary" ng-click="$ctrl.goBackToRoom()">
-    <span>New Game</span>
-  </md-button>
+    <md-button ng-if="$ctrl.roomData.status.ended"
+               class="btn-game md-primary"
+               ng-click="$ctrl.newGame()">
+        <span ng-bind="'New Game'">
+        </span>
+    </md-button>
 </div>
 
 
