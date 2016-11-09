@@ -45,7 +45,15 @@
                     })
                     .state('game', {
                         url: '/game/:roomCode/:userName',
-                        template: '<game></game>'
+                        template: '<game></game>',
+                        resolve: {
+                            roomData: ['$stateParams','roomsService', function ($stateParams, roomsService) {
+                                return roomsService.getRoomByCode($stateParams.roomCode);
+                            }],
+                            userDate: ['$localStorage','userService', function ($localStorage, userService) {
+                                return userService.getUserById($localStorage._id);
+                            }]
+                        }
                     });
 
                 $urlRouterProvider.otherwise('/');
