@@ -268,7 +268,7 @@
                         teamScoreIndex: 1,
                         score: room.status.score[1]
                     };
-                    room.status.score[0] = currentTeamScore.score + 1;
+                    room.status.score[currentTeamScore.teamScoreIndex] = currentTeamScore.score + 1;
                     room.$save();
                     deferred.resolve(room);
                 });
