@@ -1,18 +1,58 @@
-<form ng-submit="$ctrl.joinRoom()">
-  <h4 style="margin: 0;">Joining a game...</h4>
-  <md-input-container>
-    <label>What's the room code?</label>
-    <input type="text" ng-model="$ctrl.user.roomCode" autofocus/>
-  </md-input-container>
-
-  <md-input-container>
-    <label>What's your name?</label>
-    <input type="text" ng-model="$ctrl.user.userName" />
-  </md-input-container>
-
-  <md-button class="md-raised md-primary" ng-click="$ctrl.joinRoom()">
-    Join
-  </md-button>
-</form>
-
-<a href="/">Back</a>
+<div class="u-height-100 u-display-flex u-flex-column">
+    <header></header>
+    <a ng-bind="'Back'"
+       ui-sref="home"
+       class="colour-babyBlue u-padding-20 u-fontGotham-Medium u-fontSize-14"
+       ng-style="{ 'text-decoration': 'none' }"
+       ng-disabled="$ctrl.isLoading">
+    </a>
+    <div layout="column"
+         class="u-height-100 u-display-flex">
+        <div ng-style="{ 'flex': '10' }"
+             class="u-display-flex u-flex-column">
+            <div class="flex-1"></div>
+            <div layout="row" class="u-display-flex flex-1">
+                <span flex></span>
+                <md-input-container ng-style="{ 'flex': '7' }"
+                                    class="u-display-inlineBlock">
+                    <label ng-bind="'What\'s the room code?'"
+                           class="u-fontGotham-Medium u-colour-grey u-textCenter u-fontSize-18">
+                    </label>
+                    <input maxlength="6"
+                           ng-model="$ctrl.user.roomCode"
+                           class="u-textCenter"
+                           ng-style="{ 'border-colour': '#A29292' }">
+                </md-input-container>
+                <span flex></span>
+            </div>
+            <div layout="row" class="u-display-flex flex-1">
+                <span flex></span>
+                <md-input-container ng-style="{ 'flex': '7' }"
+                                    class="u-display-inlineBlock">
+                    <label ng-bind="'What\'s your name?'"
+                           class="u-fontGotham-Medium u-colour-grey u-textCenter u-fontSize-18"
+                           ng-class="{ 'u-opacity-03': $ctrl.roomCodeLengthMatched() }">
+                    </label>
+                    <input maxlength="15"
+                           ng-model="$ctrl.user.userName"
+                           class="u-textCenter"
+                           ng-disabled="$ctrl.roomCodeLengthMatched()"
+                           ng-style="{ 'border-colour': '#A29292' }">
+                </md-input-container>
+                <span flex></span>
+            </div>
+            <div class="flex-1"></div>
+        </div>
+        <div class="u-padding-20">
+            <md-icon ng-if="!$ctrl.isLoading && $ctrl.user.userName && $ctrl.user.roomCode"
+                     md-svg-icon="arrow" aria-label="next"
+                     ng-style="{ 'height': '60px', 'width': '60px', 'cursor': 'pointer', 'float': 'right' }"
+                     ng-click="$ctrl.joinRoom()">
+            </md-icon>
+            <md-icon ng-if="$ctrl.isLoading || !$ctrl.user.userName || !$ctrl.user.roomCode"
+                     md-svg-icon="arrowGrey" aria-label="next"
+                     ng-style="{ 'height': '60px', 'width': '60px', 'float': 'right' }">
+            </md-icon>
+        </div>
+    </div>
+</div>

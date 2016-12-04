@@ -27,15 +27,19 @@
         const vm = this;
 
         vm.user = {};
+        vm.isLoading = false;
 
         _.assign(vm, {
-            joinRoom
+            joinRoom,
+            roomCodeLengthMatched
         });
 
         function joinRoom() {
             if (!_.get(vm, 'user.userName') || !_.get(vm, 'user.roomCode')) {
                 return;
             }
+
+            vm.isLoading = true;
 
             roomsService
                 .joinRoom(vm.user.roomCode, vm.user.userName)
@@ -50,6 +54,10 @@
                     });
 
                 });
+        }
+
+        function roomCodeLengthMatched() {
+            return !_.get(vm, 'user.roomCode.length', 0);
         }
 
         function _createNewUser(userId, userName, roomId, gameMaster) {

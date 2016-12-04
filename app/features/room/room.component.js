@@ -16,6 +16,7 @@
 
     RoomComponentController.$inject = [
         '$localStorage',
+        '$mdDialog',
         '$q',
         '$rootScope',
         '$sessionStorage',
@@ -27,7 +28,7 @@
         '_'
     ];
 
-    function RoomComponentController($localStorage, $q, $rootScope, $sessionStorage, $state, $stateParams, Rooms, roomsService, userService, _) {
+    function RoomComponentController($localStorage, $mdDialog, $q, $rootScope, $sessionStorage, $state, $stateParams, Rooms, roomsService, userService, _) {
         const vm = this;
         const USER_ID = $localStorage._id;
         const NUM_OF_WORDS = 5;
@@ -39,7 +40,7 @@
         vm.wordArray = [];
         vm.wordsToSubmit = [];
         vm.user = {};
-        vm.teamsLabels = {'Team One': true, 'Team Two': false};
+        vm.teamsLabels = { 'Team One': true, 'Team Two': false };
         vm.players = [];
 
         _.assign(vm, {
@@ -54,7 +55,8 @@
             participantIsMaster,
             removeUser,
             startGame,
-            switchTeams
+            switchTeams,
+            showForm
         });
 
         function $onInit() {
@@ -71,11 +73,16 @@
             _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', NUM_OF_WORDS);
             roomsService.getRoomData(_.get(vm, 'user.roomId')).then(room => _.set(vm, 'roomData', room));
             userService.getUserData(USER_ID).then(user => _.set(vm, 'user', user));
+            vm.isLoading = false;
         }
 
-        function editSubmittedWords() {
+        function editSubmittedWords(event) {
+            vm.isLoading = true;
             roomsService.removeWords(vm.user.roomId, USER_ID);
-            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', false);
+            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', false).then(() => {
+                vm.isLoading = false;
+            });
+            showForm(event);
         }
 
         function getPlayers() {
@@ -111,7 +118,7 @@
 
         function startGame() {
             roomsService.startGame(vm.user.roomId, USER_ID);
-            $state.go('game', {roomCode: vm.roomData.roomCode, userName: vm.user.userName});
+            $state.go('game', { roomCode: vm.roomData.roomCode, userName: vm.user.userName });
         }
 
         function submitWords() {
@@ -119,13 +126,46 @@
             if (hasEmptyFormField) {
                 return;
             }
+            vm.isLoading = true;
             roomsService.submitWords(vm.user.roomId, USER_ID, vm.form);
-            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', true);
+            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', true).then(() => {
+                vm.isLoading = false;
+            });
         }
 
         function switchTeams() {
             _updatePlayerStatus(vm.user.roomId, USER_ID, 'teamOne', !vm.user.status.teamOne);
             _updateUserStatus(USER_ID, 'teamOne', !vm.user.status.teamOne);
+        }
+
+        function showForm(event) {
+            return $mdDialog.show({
+                clickOutsideToClose: true,
+                controller: ['$scope', '$mdDialog', ($scope, $mdDialog) => DialogController($scope, $mdDialog, vm.form)],
+                templateUrl: '../app/features/room/words-form.html',
+                targetEvent: event,
+                locals: {
+                    form: vm.form
+                }
+            }).then(form => {
+                if (!form) {
+                    return;
+                }
+                vm.form = form;
+                submitWords();
+            });
+
+            function DialogController($scope, $mdDialog, form) {
+                $scope.form = form;
+                $scope.submitWords = () => {
+                    const hasEmptyFormField = _hasEmptyFormFields(vm.form);
+                    if (hasEmptyFormField) {
+                        return;
+                    }
+                    $mdDialog.hide($scope.form);
+                };
+                $scope.exitModal = () => $mdDialog.hide();
+            }
         }
 
         function _generateEmptyForm(numOfWords) {
@@ -141,15 +181,15 @@
         }
 
         function _updateGameStatus(roomId, statusField, newStatus) {
-            roomsService.updateGameStatus(roomId, statusField, newStatus);
+            return roomsService.updateGameStatus(roomId, statusField, newStatus);
         }
 
         function _updatePlayerStatus(roomId, userId, statusField, newStatus) {
-            roomsService.updatePlayerStatus(roomId, userId, statusField, newStatus);
+            return roomsService.updatePlayerStatus(roomId, userId, statusField, newStatus);
         }
 
         function _updateUserStatus(userId, statusField, newStatus) {
-            userService.updateUserStatus(userId, statusField, newStatus);
+            return userService.updateUserStatus(userId, statusField, newStatus);
         }
     }
 })();

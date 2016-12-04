@@ -1,19 +1,40 @@
-<div layout="column">
-  <div flex>
-    <md-content layout-gt-sm="column" layout-padding>
-      <form ng-submit="$ctrl.createGame()">
-        <h4 style="margin: 0;">Creating a game...</h4>
-        <md-input-container>
-          <label>What's your name?</label>
-          <input ng-model="$ctrl.user.userName">
-          <md-button class="md-raised md-primary" ng-click="$ctrl.createGame()" ng-disabled="$ctrl.isLoading">
-            Create
-          </md-button>
-        </md-input-container>
-      </form>
-    </md-content>
-    <md-button href="/" class="md-raised" ng-disabled="$ctrl.isLoading">
-      Back
-    </md-button>
-  </div>
+<div class="u-height-100 u-display-flex u-flex-column">
+    <header></header>
+    <a ng-bind="'Back'"
+       ui-sref="home"
+       class="colour-babyBlue u-padding-20 u-fontGotham-Medium u-fontSize-14"
+       ng-style="{ 'text-decoration': 'none' }"
+       ng-disabled="$ctrl.isLoading">
+    </a>
+    <div layout="column"
+         class="u-height-100 u-display-flex">
+        <div ng-style="{ 'flex': '10' }"
+             class="u-display-flex u-flex-column">
+            <div class="flex-1"></div>
+            <div layout="row" class="u-display-flex flex-1">
+                <span flex></span>
+                <md-input-container ng-style="{ 'flex': '7' }">
+                    <label ng-bind="'What\'s your name?'"
+                           class="u-fontGotham-Medium u-colour-grey u-textCenter u-fontSize-18">
+                    </label>
+                    <input ng-model="$ctrl.user.userName"
+                           ng-style="{ 'border-colour': '#A29292' }"
+                           class="u-textCenter">
+                </md-input-container>
+                <span flex></span>
+            </div>
+            <div class="flex-1"></div>
+        </div>
+        <div class="u-padding-20">
+            <md-icon ng-if="!$ctrl.isLoading && $ctrl.user.userName"
+                     md-svg-icon="arrow" aria-label="next"
+                     ng-style="{ 'height': '60px', 'width': '60px', 'cursor': 'pointer', 'float': 'right' }"
+                     ng-click="$ctrl.createGame()">
+            </md-icon>
+            <md-icon ng-if="$ctrl.isLoading || !$ctrl.user.userName"
+                     md-svg-icon="arrowGrey" aria-label="next"
+                     ng-style="{ 'height': '60px', 'width': '60px', 'float': 'right' }">
+            </md-icon>
+        </div>
+    </div>
 </div>

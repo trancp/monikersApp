@@ -1,0 +1,61 @@
+$baby-blue: rgb(0, 203, 255); // #00CBFF
+
+$red: rgb(255, 0, 0); // #FF0000
+
+$grey: rgb(162, 146, 146); // #A29292
+
+$white: rgb(255, 255, 255); // #FFFFFF
+
+$yellow: rgb(247, 197, 255); // #F7C500
+
+$green: rgb(44, 195, 107); // #2CC36B
+
+.colour-babyBlue {
+    color: $baby-blue;
+}
+
+.colour-red {
+    color: $red;
+}
+
+.colour-grey {
+    color: $grey;
+}
+
+.colour-white {
+    color: $white;
+}
+
+.colour-yellow {
+    color: $yellow;
+}
+
+.colour-green {
+    color: $green;
+}
+
+.bg-colour-babyBlue {
+    background-color: $baby-blue;
+
+}
+
+.bg-colour-red {
+    background-color: $red;
+}
+
+.bg-colour-grey {
+    background-color: $grey;
+}
+
+.bg-colour-white {
+    background-color: $white;
+}
+
+.bg-colour-yellow {
+    background-color: $yellow;
+}
+
+.bg-colour-green {
+    background-color: $green;
+}
+

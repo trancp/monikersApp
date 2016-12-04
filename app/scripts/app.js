@@ -35,10 +35,10 @@
                         url: '/room/:roomCode/:userName',
                         template: '<room></room>',
                         resolve: {
-                            roomData: ['$stateParams','roomsService', function ($stateParams, roomsService) {
+                            roomData: ['$stateParams', 'roomsService', function ($stateParams, roomsService) {
                                 return roomsService.getRoomByCode($stateParams.roomCode);
                             }],
-                            userDate: ['$localStorage','userService', function ($localStorage, userService) {
+                            userDate: ['$localStorage', 'userService', function ($localStorage, userService) {
                                 return userService.getUserById($localStorage._id);
                             }]
                         }
@@ -47,10 +47,10 @@
                         url: '/game/:roomCode/:userName',
                         template: '<game></game>',
                         resolve: {
-                            roomData: ['$stateParams','roomsService', function ($stateParams, roomsService) {
+                            roomData: ['$stateParams', 'roomsService', function ($stateParams, roomsService) {
                                 return roomsService.getRoomByCode($stateParams.roomCode);
                             }],
-                            userDate: ['$localStorage','userService', function ($localStorage, userService) {
+                            userDate: ['$localStorage', 'userService', function ($localStorage, userService) {
                                 return userService.getUserById($localStorage._id);
                             }]
                         }
@@ -62,6 +62,12 @@
             $mdIconProvider
                 .icon('key', 'icons/key.svg')
                 .icon('remove', 'icons/remove.svg')
-                .icon('checkmark', 'icons/checkmark.svg');
+                .icon('checkmark', 'icons/checkmark.svg')
+                .icon('arrow', 'icons/arrow.svg')
+                .icon('arrowGrey', 'icons/arrowGrey.svg')
+                .icon('doubleArrowLeft', 'icons/doubleArrowLeft.svg')
+                .icon('doubleArrowRight', 'icons/doubleArrowRight.svg')
+                .icon('gotIt', 'icons/gotIt.svg')
+                .icon('pass', 'icons/pass.svg');
         }]);
 })();

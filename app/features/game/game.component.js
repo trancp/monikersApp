@@ -13,9 +13,9 @@
         return component;
     }
 
-    GameController.$inject = ['$localStorage', '$stateParams', 'roomsService', 'Rooms', 'userService', '$scope', '$state'];
+    GameController.$inject = ['$localStorage', '$mdDialog', '$stateParams', 'roomsService', 'Rooms', 'userService', '$scope', '$state'];
 
-    function GameController($localStorage, $stateParams, roomsService, Rooms, userService, $scope, $state) {
+    function GameController($localStorage, $mdDialog, $stateParams, roomsService, Rooms, userService, $scope, $state) {
         const vm = this;
         const USER_ID = $localStorage._id;
 
@@ -27,6 +27,7 @@
             isEveryoneStarted,
             isLastPlayer,
             isLastPlayerAndLastTurn,
+            isLastRoundAndNoMoreWords,
             isPlayersTurn,
             getActiveIndices,
             getWord,
@@ -114,12 +115,14 @@
             if (!originalIndex) {
                 return;
             }
+            vm.isLoading = true;
             _.set(_.get(vm, `roomData.wordBank[${originalIndex}]`), 'active', false);
             _updateScoreAndWords(vm.user.roomId, vm.roomData.wordBank, currentTeamsTurn()).then(room => {
                 vm.indexArray = getActiveIndices(room.wordBank);
                 if (!_.get(vm, `indexArray[${vm.index}]`)) {
                     vm.index = _.random(0, vm.indexArray.length - 1);
                 }
+                vm.isLoading = false;
             });
         }
 
@@ -128,18 +131,23 @@
         }
 
         function _updateGameStatus(roomId, statusField, newStatus) {
-            roomsService.updateGameStatus(roomId, statusField, newStatus);
+            return roomsService.updateGameStatus(roomId, statusField, newStatus);
         }
 
         function nextPlayersTurn() {
-            roomsService.nextPlayerturn(vm.user.roomId);
+            vm.isLoading = true;
+            roomsService.nextPlayerturn(vm.user.roomId).then(() => {
+                vm.isLoading = false;
+            });
         }
 
-        function startNewGame() {
-            roomsService.startNewGame(vm.user.roomId).then(() => {
-                $state.go('room', {
-                    roomCode: $stateParams.roomCode,
-                    userName: vm.user.userName
+        function startNewGame(event) {
+            _showConfirmDialog(event).then(() => {
+                roomsService.startNewGame(vm.user.roomId).then(() => {
+                    $state.go('room', {
+                        roomCode: $stateParams.roomCode,
+                        userName: vm.user.userName
+                    });
                 });
             });
         }
@@ -152,7 +160,26 @@
         }
 
         function startTimer() {
-            _updateGameStatus(vm.user.roomId, 'timer', true);
+            vm.isLoading = true;
+            _updateGameStatus(vm.user.roomId, 'timer', true).then(() => {
+                vm.isLoading = false;
+            });
+        }
+
+        function isLastRoundAndNoMoreWords() {
+            return 3 === _.get(vm, 'roomData.status.round')
+                && !getActiveIndices().length;
+        }
+
+        function _showConfirmDialog(event) {
+            var confirm = $mdDialog.confirm()
+                .title('Are you sure?')
+                .ariaLabel('New Game')
+                .targetEvent(event)
+                .ok('Yes')
+                .cancel('No');
+
+            return $mdDialog.show(confirm);
         }
 
         $scope.$on('timer-stopped', function () {

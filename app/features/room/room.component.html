@@ -1,88 +1,101 @@
-<h1 ng-bind="::$ctrl.roomData.roomCode">
-</h1>
-<md-list>
-    <div class="switch-teams">
-        <md-button class="btn-switch-teams md-raised"
-                   aria-label="switch teams"
-                   ng-click="$ctrl.switchTeams()"
-                   ng-bind="'SWITCH TEAMS'">
-        </md-button>
+<div class="u-height-100">
+    <div class="u-display-flex">
+        <div
+            class="u-width-100 u-textUppercase colour-white bg-colour-babyBlue u-fontSize-18 u-padding-10-20 u-fontGotham-Medium"
+            ng-bind="'Monikers'">
+        </div>
+        <div ng-bind="::'#'+$ctrl.roomData.roomCode"
+             class="flex-1 bg-colour-babyBlue colour-white u-fontSize-18 u-padding-10-20 u-fontGotham-Medium u-textRight">
+        </div>
     </div>
-    <div ng-if="$ctrl.getPlayers()"
-         class="team-list">
+    <div class="u-display-flex u-padding-10-0">
+        <div ng-bind="'Team One'"
+             class="flex-2 u-fontGotham-Medium u-fontSize-18 colour-grey u-textCenter u-padding-20">
+        </div>
+        <div class="flex-1 u-display-flex">
+            <div class="flex-1"></div>
+            <div class="flex-1">
+                <md-icon ng-if="$ctrl.user.status.teamOne"
+                         md-svg-icon="doubleArrowRight" aria-label="Switch Teams"
+                         ng-click="$ctrl.switchTeams()"
+                         ng-style="{ 'height': '60px', 'width': '60px', 'cursor': 'pointer' }">
+                </md-icon>
+                <md-icon ng-if="!$ctrl.user.status.teamOne"
+                         md-svg-icon="doubleArrowLeft" aria-label="Switch Teams"
+                         ng-click="$ctrl.switchTeams()"
+                         ng-style="{ 'height': '60px', 'width': '60px', 'cursor': 'pointer' }">
+                </md-icon>
+            </div>
+            <div class="flex-1"></div>
+        </div>
+        <div ng-bind="'Team Two'"
+             class="flex-2 u-fontGotham-Medium u-fontSize-18 colour-grey u-textCenter u-padding-20">
+
+        </div>
+    </div>
+    <div class="u-display-flex u-flex-column"
+         ng-style="{ 'height': 'calc(100% - 124px)'}">
+        <md-list class="flex-1">
+            <div ng-if="$ctrl.getPlayers()"
+                 class="u-display-flex">
         <span ng-repeat="(labelText, value) in $ctrl.teamsLabels"
-              class="col-team">
-          <div class="team-label"
-               ng-bind="::labelText">
-          </div>
-          <div ng-repeat="(playerId, player) in $ctrl.roomData.players track by $index"
-               ng-if="player.teamOne === value">
-              <span ng-if="player.submitted">
-                  <md-icon md-svg-icon="checkmark" aria-label="submitted">
+              class="flex-1 u-textCenter">
+          <div ng-if="player.teamOne === value"
+               ng-repeat="(playerId, player) in $ctrl.roomData.players track by $index"
+               class="u-display-flex">
+              <span class="flex-1"
+                    ng-style="{ 'min-width': '40px'}">
+                  <md-icon ng-if="player.submitted"
+                           md-svg-icon="checkmark" aria-label="submitted">
                   </md-icon>
               </span>
-              <span class="user-label"
+              <span class="u-fontSize-18 u-fontGotham-Medium flex-3 colour-grey"
                     ng-bind="player.userName">
               </span>
-              <span ng-if="playerId === $ctrl.roomData.status.roomMaster">
+              <div class="u-display-inlineBlock flex-1"
+                   ng-style="{ 'min-width': '40px'}">
+                  <span ng-if="playerId === $ctrl.roomData.status.roomMaster">
                   <md-icon md-svg-icon="key" aria-label="master">
                   </md-icon>
               </span>
-              <span ng-if="$ctrl.participantIsMaster()">
+                  <span ng-if="$ctrl.participantIsMaster()">
                 <span ng-if="playerId !== $ctrl.roomData.status.roomMaster">
                     <md-icon md-svg-icon="remove" aria-label="remove"
                              ng-click="$ctrl.removeUser(playerId)">
                     </md-icon>
                 </span>
               </span>
+              </div>
+
         </div>
         </span>
+            </div>
+        </md-list>
+        <div class="u-padding-20">
+            <div ng-if="$ctrl.isGameReadyToStart() && $ctrl.isEvenTeams()">
+                <button ng-bind="'Start'"
+                        ng-click="$ctrl.startGame()"
+                        ng-disabled="$ctrl.isLoading"
+                        class="c-btn u-marginBottom-10 colour-white bg-colour-babyBlue u-border-standard u-box-shadow u-fontGotham-Medium">
+                </button>
+            </div>
+            <div ng-if="!$ctrl.hasSubmitted()">
+                <button ng-bind="'Enter Words'"
+                        ng-click="$ctrl.showForm($event)"
+                        ng-disabled="$ctrl.isLoading"
+                        class="c-btn u-marginBottom-10 colour-grey bg-colour-white u-border-standard u-box-shadow u-fontGotham-Medium">
+                </button>
+            </div>
+            <div ng-if="$ctrl.hasSubmitted()">
+                <button ng-bind="'Edit Submissions'"
+                        ng-disabled="$ctrl.isLoading"
+                        ng-click="$ctrl.editSubmittedWords($event)"
+                        class="c-btn u-marginBottom-10 colour-grey bg-colour-white u-border-standard u-box-shadow u-fontGotham-Medium">
+                </button>
+            </div>
+        </div>
+
     </div>
-</md-list>
-
-<div class="form-submit" ng-if="!$ctrl.hasSubmitted()">
-    <form ng-submit="$ctrl.submitWords()" ng-if="!$ctrl.submitted">
-        <h4 style="margin: 0;">Submit 5 Words!</h4>
-        <div ng-repeat="word in $ctrl.form track by $index">
-            <md-input-container>
-                <label class="word-label"
-                       ng-bind="::$index+1 + ')'">
-                </label>
-                <input type="text"
-                       ng-model="$ctrl.form[$index]"
-                       autofocus/>
-            </md-input-container>
-        </div>
-        <div>
-            <md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.submitWords()">
-                Submit
-            </md-button>
-        </div>
-    </form>
 </div>
-
-<div ng-if="$ctrl.hasSubmitted()" class="element-centered">
-    <!--<div>Waiting for everyone to submit words</div>-->
-    <!--<div ng-if="$ctrl.isGameStarted()"></div>-->
-    <md-button class="btn-submit md-raised md-primary" ng-click="$ctrl.editSubmittedWords()">
-        Edit Submissions
-    </md-button>
-</div>
-
-
-<div ng-if="$ctrl.isGameReadyToStart() && $ctrl.isEvenTeams()"
-     class="element-centered">
-    <md-button class="md-raised md-primary" ng-click="$ctrl.startGame()">
-        Start
-    </md-button>
-</div>
-
-
-<!--<div class="btn-back element-centered">-->
-<!--<a href="/"-->
-<!--ng-click="$ctrl.removeUser()">-->
-<!--Back-->
-<!--</a>-->
-<!--</div>-->
 
 

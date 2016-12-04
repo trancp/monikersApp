@@ -109,6 +109,7 @@
                         room = shufflePlayers(room);
                     } else {
                         room.status.turnOrder = _setNextPlayerTurn(room.status.turnOrder);
+                        room.wordBank = _.shuffle(room.wordBank);
                     }
                     room.status.timer = false;
                     room.$save();

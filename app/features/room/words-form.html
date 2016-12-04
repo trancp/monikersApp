@@ -1,0 +1,31 @@
+<div class="u-display-flex u-flex-column u-height-100">
+    <div class="u-textRight u-padding-10">
+        <md-icon md-svg-icon="remove" aria-label="remove"
+                 ng-style="{ 'cursor': 'pointer' }"
+                 ng-click="exitModal()">
+        </md-icon>
+    </div>
+    <div class="u-display-flex u-flex-column flex-1">
+        <div class="u-textCenter flex-1">
+            <form>
+                <div ng-repeat="word in form track by $index"
+                     class="u-display-flex">
+                    <div class="flex-1"></div>
+                    <md-input-container ng-style="{ 'margin': '5px 0', flex: 5 }">
+                        <input type="text"
+                               ng-model="form[$index]"
+                               aria-label="Input Words"
+                               autofocus/>
+                    </md-input-container>
+                    <div class="flex-1"></div>
+                </div>
+            </form>
+        </div>
+        <div class="u-padding-20">
+            <button ng-bind="'Submit'"
+                    ng-click="submitWords()"
+                    class="c-btn colour-grey bg-colour-white u-border-standard u-box-shadow">
+            </button>
+        </div>
+    </div>
+</div>

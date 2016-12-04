@@ -1,97 +1,176 @@
-<div ng-if="!$ctrl.isEveryoneStarted() && !$ctrl.roomData.status.ended">
-    Waiting for everyone to press start
+<div ng-if="!$ctrl.isEveryoneStarted() && !$ctrl.roomData.status.ended"
+     class="u-display-flex u-flex-column u-height-100">
+    <div class="flex-1">
+    </div>
+    <div class="flex-1 u-textCenter u-fontGotham-Medium colour-grey u-fontSize-30"
+         ng-bind="'Waiting for everyone to press start'">
+    </div>
+    <div class="flex-1">
+    </div>
 </div>
 
-<div class="element-centered" ng-if="$ctrl.isEveryoneStarted()">
-    <div>
-        ROUND: {{ $ctrl.roomData.status.round }}
-    </div>
-    <div>
-        <span>Team One: {{$ctrl.roomData.status.score[0]}} </span>
-        <span>Team Two: {{$ctrl.roomData.status.score[1]}} </span>
-    </div>
-    <div ng-if="$ctrl.roomData.status.timer">
-        <timer class="game-timer" interval="1000" countdown="60">{{countdown}}</timer>
-    </div>
-    <div ng-if="!$ctrl.roomData.status.timer && $ctrl.isPlayersTurn()">
-        <md-button class="btn-game md-raised md-primary" ng-click="$ctrl.startTimer()">Start Timer</md-button>
-    </div>
-    <div>
-        <h2 ng-bind="$ctrl.currentTeamsTurn() ? 'Team One' : 'Team Two'"></h2>
-    </div>
-    <div>
-        <div ng-repeat="player in $ctrl.roomData.status.turnOrder track by $index">
-            <li>
-              <span ng-if="player.turn">
-                  <h3 ng-bind="player.userName">
-                  </h3>
-              </span>
-                <span ng-if="!player.turn"
-                      ng-bind="player.userName">
-              </span>
-            </li>
+<div ng-if="$ctrl.isEveryoneStarted()"
+     class="u-textCenter u-height-100 bg-colour-white">
+    <div class="u-display-flex">
+        <div class="flex-1 u-padding-20">
+            <div ng-bind="$ctrl.roomData.status.score[0]"
+                 class="u-margin-0-auto u-padding-10 colour-babyBlue u-fontGotham-Bold u-box-shadow u-fontSize-28">
+            </div>
+        </div>
+        <div class="flex-1">
+            <div
+                ng-class="{ 'circle-901': !$ctrl.roomData.status.timer, 'u-box-shadow1': !$ctrl.roomData.status.timer }"
+                class="colour-babyBlue u-fontGotham-Book bg-colour-white u-fontSize-48 u-margin-0-auto">
+                <span ng-if="!$ctrl.roomData.status.timer"
+                      ng-bind="$ctrl.roomData.status.round"
+                      ng-style="{ 'vertical-align': '-19px' }">
+                </span>
+                <span ng-if="$ctrl.roomData.status.timer">
+                    <timer class="u-fontSize-48 colour-red"
+                           ng-style="{ 'vertical-align': '-19px' }"
+                           interval="1000"
+                           countdown="60">
+                        {{ countdown }}
+                    </timer>
+                </span>
+            </div>
+        </div>
+        <div class="flex-1 u-padding-20">
+            <div ng-bind="$ctrl.roomData.status.score[1]"
+                 class="u-margin-0-auto u-padding-10 colour-babyBlue u-fontGotham-Bold u-box-shadow u-fontSize-28">
+            </div>
         </div>
     </div>
-    <div ng-if="$ctrl.isPlayersTurn()">
-        <div class="u-margin-30-0" ng-if="$ctrl.roomData.status.timer">
-            <div class="u-margin-30-0">
-                <md-button class="btn-game md-raised"
-                           ng-click="$ctrl.gotIt()"
-                           ng-disabled="$ctrl.isLoading"
-                           ng-bind="'Got it!'">
-                </md-button>
+    <div class="u-display-flex u-flex-column"
+         ng-style="{ 'height': 'calc(100% - 102px'}">
+        <div ng-if="!($ctrl.isPlayersTurn() && $ctrl.roomData.status.timer)"
+             class="flex-1 u-padding-10">
+            <div ng-repeat="player in $ctrl.roomData.status.turnOrder track by $index">
+                <div ng-if="player.turn"
+                     class="u-fontSize-36 u-fontGotham-Bold"
+                     ng-bind="player.userName"
+                     ng-class="{ 'colour-babyBlue': player.teamOne, 'colour-grey':  !player.teamOne }">
+                </div>
+                <div ng-if="!player.turn"
+                     class="u-fontSize-18 u-fontGotham-Medium">
+                     <span ng-bind="player.userName"
+                           ng-class="{ 'colour-babyBlue': player.teamOne, 'colour-grey':  !player.teamOne }">
+                     </span>
+                </div>
             </div>
-            <div class="u-margin-30-0">
-                <div ng-if="$ctrl.getActiveIndices().length">
-                    <div ng-if="1 === $ctrl.getActiveIndices().length"
-                         ng-bind="'(Last word)'"
-                         ng-style="{ 'vertical-align': '10px' }">
-                    </div>
-                    <div ng-bind="$ctrl.getWord()"
-                         ng-style="{ 'font-size': '50px', padding: '35px 0' }">
+        </div>
+        <div class="flex-1"
+             ng-if="$ctrl.isPlayersTurn() && $ctrl.roomData.status.timer">
+            <div class="u-height-100 u-display-flex">
+                <div class="flex-1"></div>
+                <div class="u-height-100"
+                     ng-style="{ 'flex': '10' }">
+                    <div class="u-border-red u-padding-10"
+                         ng-style="{ 'border-radius': '14px', 'height': 'calc(100% - 20px)' }">
+                        <div class="bg-colour-red u-height-100"
+                             ng-style="{ 'border-radius': '7px' }">
+                            <div class="u-display-flex u-flex-column u-height-100">
+                                <div class="flex-3"></div>
+                                <div class="colour-white u-fontSize-30 u-fontGotham-Book flex-2">
+                                    <div ng-if="$ctrl.getActiveIndices().length">
+                                        <div ng-if="1 === $ctrl.getActiveIndices().length"
+                                             ng-bind="'(Last word)'">
+                                        </div>
+                                        <div ng-bind="$ctrl.getWord()">
+                                        </div>
+                                    </div>
+                                    <div ng-if="!$ctrl.getActiveIndices().length"
+                                         ng-bind="'NO MORE WORDS!'">
+                                    </div>
+                                </div>
+                                <div class="flex-3 u-flex-column"
+                                     ng-style="{ 'position': 'relative'}">
+                                    <div class="u-display-flex"
+                                         ng-style="{ 'position': 'absolute', 'bottom': '0', 'left': '0', 'right': '0', 'padding-bottom': '10px' }">
+                                        <div ng-if="$ctrl.getActiveIndices().length"
+                                             class="flex-1 u-display-flex">
+                                            <div class=flex-1></div>
+                                            <div class="flex-2">
+                                                <div>
+                                                    <md-icon md-svg-icon="pass" aria-label="Pass"
+                                                             ng-disabled="$ctrl.isLoading"
+                                                             ng-click="$ctrl.passWord()"
+                                                             ng-style="{ 'height': '100px', 'width': '100px', 'cursor': 'pointer' }">
+                                                    </md-icon>
+                                                </div>
+                                            </div>
+                                            <div class=flex-1></div>
+                                        </div>
+                                        <div ng-if="$ctrl.getActiveIndices().length"
+                                             class="flex-1 u-display-flex">
+                                            <div class=flex-1></div>
+                                            <div class="flex-2">
+                                                <div>
+                                                    <md-icon md-svg-icon="gotIt" aria-label="Got It!"
+                                                             ng-click="$ctrl.gotIt()"
+                                                             ng-disabled="$ctrl.isLoading"
+                                                             ng-style="{ 'height': '100px', 'width': '100px', 'cursor': 'pointer' }">
+                                                    </md-icon>
+                                                </div>
+                                            </div>
+                                            <div class=flex-1></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <h1 ng-if="!$ctrl.getActiveIndices().length"
-                    ng-style="{ color: 'red' }"
-                    ng-bind="'NO MORE WORDS!'">
-                </h1>
-                <md-button class="btn-game md-raised md-primary"
-                           ng-click="$ctrl.passWord()"
-                           ng-disabled="$ctrl.isLoading"
-                           ng-bind="'Pass'">
-                </md-button>
+                <div class="flex-1"></div>
             </div>
         </div>
-        <div class="u-margin-70-0-0"
-             ng-if="!$ctrl.isLastPlayerAndLastTurn()">
-            <md-button class="btn-game md-primary"
-                       ng-click="$ctrl.nextPlayersTurn()">
-                       <span ng-if="!$ctrl.isLastPlayer()"
+        <div ng-if="$ctrl.isPlayersTurn()">
+            <div class="u-padding-20">
+                <div
+                    ng-if="!$ctrl.roomData.status.timer && !$ctrl.isLastRoundAndNoMoreWords()">
+                    <button ng-bind="'Start Timer'"
+                            ng-disabled="$ctrl.isLoading"
+                            ng-click="$ctrl.startTimer()"
+                            class="c-btn u-marginBottom-10 colour-white bg-colour-babyBlue u-border-standard u-box-shadow u-fontGotham-Bold">
+                    </button>
+                </div>
+                <div ng-if="!$ctrl.isLastPlayerAndLastTurn() && !$ctrl.isLastRoundAndNoMoreWords()">
+                    <button ng-disabled="$ctrl.isLoading"
+                            ng-click="$ctrl.nextPlayersTurn()"
+                            ng-disabled="$ctrl.isLoading"
+                            class="colour-babyBlue bg-colour-white u-border-babyBlue u-fontGotham-Bold u-padding-10 u-width-100 u-fontSize-18">
+                       <span ng-if="!$ctrl.isLastPlayer() && $ctrl.getActiveIndices().length"
                              ng-bind="'Next Player'">
                        </span>
-                <span ng-if="$ctrl.isLastPlayer()"
-                      ng-bind="'Next Round'">
+                        <span ng-if="$ctrl.isLastPlayer() || !$ctrl.getActiveIndices().length"
+                              ng-bind="'Next Round'">
                        </span>
-            </md-button>
-        </div>
-        <div class="u-margin-70-0-0"
-             ng-if="$ctrl.isLastPlayerAndLastTurn()">
-            <md-button class="btn-game md-primary"
-                       ng-click="$ctrl.startNewGame()">
-                <span ng-bind="'New Game'">
-                </span>
-            </md-button>
+                    </button>
+                </div>
+                <div class=""
+                     ng-if="$ctrl.isLastPlayerAndLastTurn() || $ctrl.isLastRoundAndNoMoreWords()">
+                    <button ng-bind="'New Game'"
+                            ng-disabled="$ctrl.isLoading"
+                            ng-click="$ctrl.startNewGame($event)"
+                            class="c-btn colour-white bg-colour-red u-box-shadow u-fontGotham-Medium">
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div>
-    <md-button ng-if="$ctrl.roomData.status.ended"
-               class="btn-game md-primary"
-               ng-click="$ctrl.newGame()">
-        <span ng-bind="'New Game'">
-        </span>
-    </md-button>
+<div ng-if="$ctrl.roomData.status.ended"
+     class="u-display-flex u-flex-column u-padding-10 u-height-100">
+    <div class="flex-1">
+    </div>
+    <div class="flex-1">
+        <button ng-bind="'New Game'"
+                ng-disabled="$ctrl.isLoading"
+                ng-click="$ctrl.newGame()"
+                class="c-btn colour-white bg-colour-red u-box-shadow u-fontGotham-Medium">
+        </button>
+    </div>
+    <div class="flex-1">
+    </div>
 </div>
-
-

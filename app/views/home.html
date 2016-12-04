@@ -1,17 +1,13 @@
-<div class="main" layout="row">
-  <span flex></span>
-  <div layout="column">
-    <h3 ng-bind="'What do you want to do?'"></h3>
-    <md-button class="md-raised"
-               href="/create"
-               ng-bind="'Create'"
-               aria-label="'Create">
-        </md-button>
-    <md-button class="md-raised md-primary"
-               href="/join"
-               ng-bind="'Join'"
-               aria-label="'Join">
-    </md-button>
-  </div>
-  <span flex></span>
+<div class="bg-colour-babyBlue u-height-100 u-display-flex u-flex-column">
+    <header class="flex-1"></header>
+    <div class="u-padding-20">
+        <button ng-bind="'Create'"
+                ui-sref="create"
+                class="c-btn u-marginBottom-10 colour-babyBlue bg-colour-white">
+        </button>
+        <button ng-bind="'Join'"
+                ui-sref="join"
+                class="c-btn colour-white bg-colour-red">
+        </button>
+    </div>
 </div>

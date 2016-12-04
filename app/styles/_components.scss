@@ -1,0 +1,39 @@
+.c-btn {
+    font-family: 'GothamRounded-Medium';
+    font-size: 28px;
+    padding: 20px;
+    border: none;
+    width: 100%;
+}
+
+md-input-container:not(.md-input-invalid).md-input-focused .md-input {
+    border-color: $grey;
+}
+
+md-input-container:not(.md-input-invalid).md-input-focused label {
+    color: $grey;
+}
+
+md-dialog {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
+
+.circle-90 {
+    width: 90px;
+    height: 90px;
+    -webkit-border-radius: 45px;
+    -moz-border-radius: 45px;
+    border-radius: 45px;
+}
+
+.circle-100 {
+    width: 100px;
+    height: 99px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+}
