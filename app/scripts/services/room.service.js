@@ -80,7 +80,7 @@
                 .then(rooms => {
                     const roomKey = _.findKey(rooms, room => _.get(room, 'roomCode') === roomCode);
                     roomData = rooms[roomKey];
-                    deferred.resolve(roomKey);
+                    deferred.resolve({ roomId: roomKey, data: roomData });
                 });
             return deferred.promise;
         }
@@ -93,7 +93,7 @@
         function joinRoom(roomCode, userName) {
             const deferred = $q.defer();
             getRoomByCode(roomCode)
-                .then(roomId => _addPlayerToRoom(roomId, roomCode, userName))
+                .then(roomData => _addPlayerToRoom(roomData.roomId, roomCode, userName, roomData.data))
                 .then(newUserObjectPromise => deferred.resolve(newUserObjectPromise));
             return deferred.promise;
         }
@@ -303,14 +303,17 @@
             return deferred.promise;
         }
 
-        function _addPlayerToRoom(roomId, roomCode, userName) {
+        function _addPlayerToRoom(roomId, roomCode, userName, roomData) {
+            const userNames = _.map(_.get(roomData, 'players'), player => player.userName);
+            const uniqueUsername = _generateUniqueUsername(userNames, userName, 0, userName);
             const deferred = $q.defer();
             $firebaseArray(new Firebase(`${FBURL}rooms/${roomId}/players`))
                 .$add({
-                    userName
+                    userName: uniqueUsername
                 })
                 .then(userId => deferred.resolve({
                     _id: userId.key(),
+                    userName: uniqueUsername,
                     roomCode,
                     roomId
                 }));
@@ -349,6 +352,15 @@
                     : generatedRoomCode;
             }
             return generatedRoomCode;
+        }
+
+        function _generateUniqueUsername(usernames, desiredUserName, index, unmodifiedUserName) {
+            const userNameExists = _.includes(usernames, desiredUserName);
+            if (userNameExists) {
+                const newDesiredUserName = `${unmodifiedUserName}-${index}`;
+                return _generateUniqueUsername(usernames, newDesiredUserName, ++index, desiredUserName);
+            }
+            return desiredUserName;
         }
 
         function _generateWordBank(roomData) {

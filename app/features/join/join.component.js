@@ -46,10 +46,10 @@
                 .then(response => {
                     $localStorage._id = response._id;
                     _setUpDefaultPlayerStatus(response.roomId, response._id);
-                    _createNewUser(response._id, vm.user.userName, response.roomId, false).then(() => {
+                    _createNewUser(response._id, response.userName, response.roomId, false).then(() => {
                         $state.go('room', {
                             roomCode: vm.user.roomCode,
-                            userName: vm.user.userName
+                            userName: response.userName
                         });
                     });
 

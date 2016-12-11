@@ -2,7 +2,7 @@
     <header></header>
     <a ng-bind="'Back'"
        ui-sref="home"
-       class="colour-babyBlue u-padding-20 u-fontGotham-Medium u-fontSize-14"
+       class="c-btn-transparentBlue u-padding-20 u-fontGotham-Medium u-fontSize-14"
        ng-style="{ 'text-decoration': 'none' }"
        ng-disabled="$ctrl.isLoading">
     </a>
@@ -10,7 +10,6 @@
          class="u-height-100 u-display-flex">
         <div ng-style="{ 'flex': '10' }"
              class="u-display-flex u-flex-column">
-            <div class="flex-1"></div>
             <div layout="row" class="u-display-flex flex-1">
                 <span flex></span>
                 <md-input-container ng-style="{ 'flex': '7' }"
@@ -25,6 +24,7 @@
                 </md-input-container>
                 <span flex></span>
             </div>
+            <div class="flex-1"></div>
             <div layout="row" class="u-display-flex flex-1">
                 <span flex></span>
                 <md-input-container ng-style="{ 'flex': '7' }"

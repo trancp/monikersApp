@@ -91,13 +91,19 @@
                                              class="flex-1 u-display-flex">
                                             <div class=flex-1></div>
                                             <div class="flex-2">
-                                                <div>
+                                                <button ng-if="!$ctrl.isLoadingPass"
+                                                        ng-style="{ 'background-color': 'transparent', 'border': 'none' }"
+                                                        ng-click="$ctrl.passWord()">
                                                     <md-icon md-svg-icon="pass" aria-label="Pass"
-                                                             ng-disabled="$ctrl.isLoading"
-                                                             ng-click="$ctrl.passWord()"
-                                                             ng-style="{ 'height': '100px', 'width': '100px', 'cursor': 'pointer' }">
+                                                             ng-style="{ 'height': '100px', 'width': '100px' }">
                                                     </md-icon>
-                                                </div>
+                                                </button>
+                                                <button ng-if="$ctrl.isLoadingPass"
+                                                        ng-style="{ 'background-color': 'transparent', 'border': 'none' }">
+                                                    <md-icon md-svg-icon="pass" aria-label="Pass"
+                                                             ng-style="{ 'height': '100px', 'width': '100px' }">
+                                                    </md-icon>
+                                                </button>
                                             </div>
                                             <div class=flex-1></div>
                                         </div>
@@ -105,13 +111,19 @@
                                              class="flex-1 u-display-flex">
                                             <div class=flex-1></div>
                                             <div class="flex-2">
-                                                <div>
+                                                <button ng-if="!$ctrl.isLoading"
+                                                        ng-style="{ 'background-color': 'transparent', 'border': 'none' }"
+                                                        ng-click="$ctrl.gotIt()">
                                                     <md-icon md-svg-icon="gotIt" aria-label="Got It!"
-                                                             ng-click="$ctrl.gotIt()"
-                                                             ng-disabled="$ctrl.isLoading"
-                                                             ng-style="{ 'height': '100px', 'width': '100px', 'cursor': 'pointer' }">
+                                                             ng-style="{ 'height': '100px', 'width': '100px' }">
                                                     </md-icon>
-                                                </div>
+                                                </button>
+                                                <button ng-if="$ctrl.isLoading"
+                                                        ng-style="{ 'background-color': 'transparent', 'border': 'none' }"
+                                                    <md-icon md-svg-icon="gotItGrey" aria-label="Got It!"
+                                                             ng-style="{ 'height': '100px', 'width': '100px' }">
+                                                    </md-icon>
+                                                </button>
                                             </div>
                                             <div class=flex-1></div>
                                         </div>
@@ -131,14 +143,13 @@
                     <button ng-bind="'Start Timer'"
                             ng-disabled="$ctrl.isLoading"
                             ng-click="$ctrl.startTimer()"
-                            class="c-btn u-marginBottom-10 colour-white bg-colour-babyBlue u-border-standard u-box-shadow u-fontGotham-Bold">
+                            class="c-btn u-marginBottom-10 c-btn-babyBlueWhite u-border-standard u-box-shadow u-fontGotham-Bold">
                     </button>
                 </div>
                 <div ng-if="!$ctrl.isLastPlayerAndLastTurn() && !$ctrl.isLastRoundAndNoMoreWords()">
-                    <button ng-disabled="$ctrl.isLoading"
+                    <button ng-disabled="$ctrl.isLoadingNextPlayer"
                             ng-click="$ctrl.nextPlayersTurn()"
-                            ng-disabled="$ctrl.isLoading"
-                            class="colour-babyBlue bg-colour-white u-border-babyBlue u-fontGotham-Bold u-padding-10 u-width-100 u-fontSize-18">
+                            class="c-btn-whiteBlue u-border-babyBlue u-fontGotham-Bold u-padding-10 u-width-100 u-fontSize-18 u-border-radius-10">
                        <span ng-if="!$ctrl.isLastPlayer() && $ctrl.getActiveIndices().length"
                              ng-bind="'Next Player'">
                        </span>
@@ -150,9 +161,9 @@
                 <div class=""
                      ng-if="$ctrl.isLastPlayerAndLastTurn() || $ctrl.isLastRoundAndNoMoreWords()">
                     <button ng-bind="'New Game'"
-                            ng-disabled="$ctrl.isLoading"
+                            ng-disabled="$ctrl.isLoadingNextPlayer"
                             ng-click="$ctrl.startNewGame($event)"
-                            class="c-btn colour-white bg-colour-red u-box-shadow u-fontGotham-Medium">
+                            class="c-btn c-btn-red u-box-shadow u-fontGotham-Medium">
                     </button>
                 </div>
             </div>
@@ -160,7 +171,7 @@
     </div>
 </div>
 
-<div ng-if="$ctrl.roomData.status.ended"
+<div ng-if="$ctrl.roomData.status.ended && !$ctrl.isLoadingNextPlayer"
      class="u-display-flex u-flex-column u-padding-10 u-height-100">
     <div class="flex-1">
     </div>
@@ -168,7 +179,7 @@
         <button ng-bind="'New Game'"
                 ng-disabled="$ctrl.isLoading"
                 ng-click="$ctrl.newGame()"
-                class="c-btn colour-white bg-colour-red u-box-shadow u-fontGotham-Medium">
+                class="c-btn c-btn-red u-box-shadow u-fontGotham-Medium">
         </button>
     </div>
     <div class="flex-1">

@@ -192,12 +192,61 @@
 .u-box-shadow {
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.26); }
 
+.u-border-radius-10 {
+  border-radius: 10px; }
+
+a {
+  color: white; }
+
 .c-btn {
   font-family: 'GothamRounded-Medium';
+  border-radius: 10px;
   font-size: 28px;
   padding: 20px;
   border: none;
   width: 100%; }
+
+.c-btn-red {
+  background-color: red;
+  color: white; }
+  .c-btn-red:hover {
+    background-color: #e60000;
+    color: #f2f2f2; }
+
+.c-btn-whiteBlue {
+  background-color: white;
+  color: #00cbff; }
+  .c-btn-whiteBlue:hover {
+    background-color: #f2f2f2;
+    color: #00b7e6; }
+
+.c-btn-whiteGrey {
+  background-color: white;
+  color: #a29292; }
+  .c-btn-whiteGrey:hover {
+    background-color: #f2f2f2;
+    color: #968484; }
+
+.c-btn-whiteGrey {
+  background-color: white;
+  color: #a29292; }
+  .c-btn-whiteGrey:hover {
+    background-color: #f2f2f2;
+    color: #968484; }
+
+.c-btn-transparentBlue {
+  background-color: transparent;
+  color: #00cbff; }
+  .c-btn-transparentBlue:hover {
+    background-color: transparent;
+    color: #00b7e6; }
+
+.c-btn-babyBlueWhite {
+  background-color: #00cbff;
+  color: white; }
+  .c-btn-babyBlueWhite:hover {
+    background-color: #00b7e6;
+    color: #f2f2f2; }
 
 md-input-container:not(.md-input-invalid).md-input-focused .md-input {
   border-color: #a29292; }
@@ -225,3 +274,7 @@ md-dialog {
   -webkit-border-radius: 50px;
   -moz-border-radius: 50px;
   border-radius: 50px; }
+
+button[disabled] {
+  background-color: transparent !important;
+  color: #a29292; }

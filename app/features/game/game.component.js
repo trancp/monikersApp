@@ -8,7 +8,10 @@
     function game() {
         var component = {
             templateUrl: '../app/features/game/game.component.html',
-            controller: GameController
+            controller: GameController,
+            bindings: {
+                roomInformation: '<'
+            }
         };
         return component;
     }
@@ -17,9 +20,11 @@
 
     function GameController($localStorage, $mdDialog, $stateParams, roomsService, Rooms, userService, $scope, $state) {
         const vm = this;
-        const USER_ID = $localStorage._id;
+        const USER_ID = $localStorage._id || vm.roomInformation.userId;
 
         vm.isLoading = false;
+        vm.isLoadingPass = false;
+        vm.isLoadingNextPlayer = false;
 
         _.assign(vm, {
             $onInit,
@@ -42,6 +47,7 @@
 
         function $onInit() {
             vm.isLoading = true;
+            vm.isLoadingPass = true;
 
             vm.roomData = roomsService.getRoom();
             vm.roomPlayerIds = _.get(vm, 'roomData.players');
@@ -53,6 +59,7 @@
             roomsService.getRoomData(vm.user.roomId).then(room => {
                 _.set(vm, 'roomData', room);
                 _.set(vm, 'isLoading', false);
+                _.set(vm, 'isLoadingPass', false);
             });
             userService.getUserData(USER_ID).then(user => _.set(vm, 'user', user));
             vm.index = 0;
@@ -66,8 +73,9 @@
         }
 
         function isEveryoneStarted() {
-            return vm.roomData.status.started;
-        }
+            const roomPlayers = _.map(_.get(vm, 'roomData.players'));
+            const playersReady = _.filter(roomPlayers, player => player.started);
+            return playersReady.length === roomPlayers.length;        }
 
         function isLastPlayer() {
             return _.get(vm, 'roomData.status.turnOrder').length - 1 === _.findIndex(_.get(vm, 'roomData.status.turnOrder'), { turn: true });
@@ -105,9 +113,11 @@
         }
 
         function passWord() {
+            vm.isLoadingPass = true;
             vm.index = vm.index < vm.indexArray.length - 1
                 ? vm.index + 1
                 : 0;
+            vm.isLoadingPass = false;
         }
 
         function gotIt() {
@@ -135,14 +145,21 @@
         }
 
         function nextPlayersTurn() {
-            vm.isLoading = true;
+            if (vm.isLoading) {
+                return;
+            }
+            vm.isLoadingNextPlayer = true;
             roomsService.nextPlayerturn(vm.user.roomId).then(() => {
-                vm.isLoading = false;
+                vm.isLoadingNextPlayer = false;
             });
         }
 
         function startNewGame(event) {
+            if (vm.isLoading) {
+                return;
+            }
             _showConfirmDialog(event).then(() => {
+                vm.isLoadingNextPlayer = true;
                 roomsService.startNewGame(vm.user.roomId).then(() => {
                     $state.go('room', {
                         roomCode: $stateParams.roomCode,

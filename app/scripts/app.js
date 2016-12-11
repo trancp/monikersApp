@@ -33,26 +33,30 @@
                     })
                     .state('room', {
                         url: '/room/:roomCode/:userName',
-                        template: '<room></room>',
+                        template: '<room room-information="$resolve.roomData"></room>',
                         resolve: {
                             roomData: ['$stateParams', 'roomsService', function ($stateParams, roomsService) {
-                                return roomsService.getRoomByCode($stateParams.roomCode);
+                                return roomsService.getRoomByCode($stateParams.roomCode).then(roomData => {
+                                    const players = _.get(roomData, 'data.players');
+                                    const userId = _.findKey(players, player => _.isEqual(player.userName, $stateParams.userName));
+                                    return { roomId: roomData.roomId, roomData: roomData.data, userId };
+                                });
                             }],
-                            userDate: ['$localStorage', 'userService', function ($localStorage, userService) {
-                                return userService.getUserById($localStorage._id);
-                            }]
+                            userData: ['$localStorage', 'roomData', 'userService', ($localStorage, roomData, userService) => userService.getUserById($localStorage._id || roomData.userId)]
                         }
                     })
                     .state('game', {
                         url: '/game/:roomCode/:userName',
-                        template: '<game></game>',
+                        template: '<game room-information="$resolve.roomData"></game>',
                         resolve: {
                             roomData: ['$stateParams', 'roomsService', function ($stateParams, roomsService) {
-                                return roomsService.getRoomByCode($stateParams.roomCode);
+                                return roomsService.getRoomByCode($stateParams.roomCode).then(roomData => {
+                                    const players = _.get(roomData, 'data.players');
+                                    const userId = _.findKey(players, player => _.isEqual(player.userName, $stateParams.userName));
+                                    return { roomId: roomData.roomId, roomData: roomData.data, userId };
+                                });
                             }],
-                            userDate: ['$localStorage', 'userService', function ($localStorage, userService) {
-                                return userService.getUserById($localStorage._id);
-                            }]
+                            userData: ['$localStorage', 'roomData', 'userService', ($localStorage, roomData, userService) => userService.getUserById($localStorage._id || roomData.userId)]
                         }
                     });
 
@@ -68,6 +72,8 @@
                 .icon('doubleArrowLeft', 'icons/doubleArrowLeft.svg')
                 .icon('doubleArrowRight', 'icons/doubleArrowRight.svg')
                 .icon('gotIt', 'icons/gotIt.svg')
-                .icon('pass', 'icons/pass.svg');
+                .icon('pass', 'icons/pass.svg')
+                .icon('gotItGrey', 'icons/gotItGrey.svg')
+                .icon('passGrey', 'icons/passGrey.svg');
         }]);
 })();

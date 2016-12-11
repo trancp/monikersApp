@@ -8,7 +8,10 @@
     function roomComponent() {
         const component = {
             templateUrl: '../app/features/room/room.component.html',
-            controller: RoomComponentController
+            controller: RoomComponentController,
+            bindings: {
+                roomInformation: '<'
+            }
         };
 
         return component;
@@ -30,7 +33,7 @@
 
     function RoomComponentController($localStorage, $mdDialog, $q, $rootScope, $sessionStorage, $state, $stateParams, Rooms, roomsService, userService, _) {
         const vm = this;
-        const USER_ID = $localStorage._id;
+        const USER_ID = $localStorage._id || vm.roomInformation.userId;
         const NUM_OF_WORDS = 5;
 
         vm.isLoading = false;
@@ -90,13 +93,20 @@
         }
 
         function isEvenTeams() {
-            const numPlayersOnTeamOne = _.filter(_.map(_.get(vm, 'roomData.players')), players => players.teamOne).length;
-            const numPlayersOnTeamTwo = _.filter(_.map(_.get(vm, 'roomData.players')), players => !players.teamOne).length;
+            const roomPlayers = _.map(_.get(vm, 'roomData.players'));
+            const numPlayersOnTeamOne = _.filter(roomPlayers, players => players.teamOne).length;
+            const numPlayersOnTeamTwo = _.filter(roomPlayers, players => !players.teamOne).length;
             return numPlayersOnTeamOne === numPlayersOnTeamTwo;
         }
 
         function isGameReadyToStart() {
-            return _.get(vm, 'roomData.status.readyToStart');
+            return _isEveryoneReady();
+        }
+
+        function _isEveryoneReady() {
+            const roomPlayers = _.map(_.get(vm, 'roomData.players'));
+            const playersReady = _.filter(roomPlayers, player => player.submitted);
+            return playersReady.length === roomPlayers.length;
         }
 
         function isGameStarted() {
@@ -117,8 +127,7 @@
         }
 
         function startGame() {
-            roomsService.startGame(vm.user.roomId, USER_ID);
-            $state.go('game', { roomCode: vm.roomData.roomCode, userName: vm.user.userName });
+            roomsService.startGame(vm.user.roomId, USER_ID).then(() => $state.go('game', { roomCode: vm.roomData.roomCode, userName: vm.user.userName }));
         }
 
         function submitWords() {
@@ -135,7 +144,7 @@
 
         function switchTeams() {
             _updatePlayerStatus(vm.user.roomId, USER_ID, 'teamOne', !vm.user.status.teamOne);
-            _updateUserStatus(USER_ID, 'teamOne', !vm.user.status.teamOne);
+            _updateUserStatus(USER_ID, 'teamOne', !_.get(vm, 'user.status.teamOne'));
         }
 
         function showForm(event) {

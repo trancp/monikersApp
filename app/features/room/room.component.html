@@ -76,21 +76,21 @@
                 <button ng-bind="'Start'"
                         ng-click="$ctrl.startGame()"
                         ng-disabled="$ctrl.isLoading"
-                        class="c-btn u-marginBottom-10 colour-white bg-colour-babyBlue u-border-standard u-box-shadow u-fontGotham-Medium">
+                        class="c-btn u-marginBottom-10 c-btn-babyBlueWhite u-border-standard u-box-shadow u-fontGotham-Medium">
                 </button>
             </div>
             <div ng-if="!$ctrl.hasSubmitted()">
                 <button ng-bind="'Enter Words'"
                         ng-click="$ctrl.showForm($event)"
                         ng-disabled="$ctrl.isLoading"
-                        class="c-btn u-marginBottom-10 colour-grey bg-colour-white u-border-standard u-box-shadow u-fontGotham-Medium">
+                        class="c-btn u-marginBottom-10 c-btn-whiteGrey u-border-standard u-box-shadow u-fontGotham-Medium">
                 </button>
             </div>
             <div ng-if="$ctrl.hasSubmitted()">
                 <button ng-bind="'Edit Submissions'"
                         ng-disabled="$ctrl.isLoading"
                         ng-click="$ctrl.editSubmittedWords($event)"
-                        class="c-btn u-marginBottom-10 colour-grey bg-colour-white u-border-standard u-box-shadow u-fontGotham-Medium">
+                        class="c-btn u-marginBottom-10 c-btn-whiteGrey u-border-standard u-box-shadow u-fontGotham-Medium">
                 </button>
             </div>
         </div>

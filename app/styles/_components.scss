@@ -1,9 +1,44 @@
+@mixin c-btn-template($color: $red, $fontColor: $white) {
+    background-color: $color;
+    color: $fontColor;
+
+    &:hover {
+        background-color: darken($color, 5%);
+        color: darken($fontColor, 5%);
+    }
+}
+
 .c-btn {
     font-family: 'GothamRounded-Medium';
+    border-radius: 10px;
     font-size: 28px;
     padding: 20px;
     border: none;
     width: 100%;
+}
+
+.c-btn-red {
+    @include c-btn-template($red);
+}
+
+.c-btn-whiteBlue {
+    @include c-btn-template($white, $baby-blue);
+}
+
+.c-btn-whiteGrey {
+    @include c-btn-template($white, $grey);
+}
+
+.c-btn-whiteGrey {
+    @include c-btn-template($white, $grey);
+}
+
+.c-btn-transparentBlue {
+    @include c-btn-template(transparent, $baby-blue);
+}
+
+.c-btn-babyBlueWhite {
+    @include c-btn-template($baby-blue, $white);
 }
 
 md-input-container:not(.md-input-invalid).md-input-focused .md-input {
@@ -36,4 +71,19 @@ md-dialog {
     -webkit-border-radius: 50px;
     -moz-border-radius: 50px;
     border-radius: 50px;
+}
+
+button[disabled] {
+    background-color: transparent !important;
+    color: $grey;
+}
+
+@mixin c-btn-template($color: $red, $fontColor: $white) {
+    background-color: $color;
+    border: 1px solid $color;
+    color: $fontColor;
+
+    &:hover {
+        background-color: darken($color, 5%);
+    }
 }
