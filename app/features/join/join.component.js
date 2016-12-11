@@ -30,9 +30,14 @@
         vm.isLoading = false;
 
         _.assign(vm, {
+            clearErrorMessage,
             joinRoom,
             roomCodeLengthMatched
         });
+
+        function clearErrorMessage() {
+            vm.errorMessage = '';
+        }
 
         function joinRoom() {
             if (!_.get(vm, 'user.userName') || !_.get(vm, 'user.roomCode')) {
@@ -52,7 +57,10 @@
                             userName: response.userName
                         });
                     });
-
+                })
+                .catch(error => {
+                    vm.isLoading = false;
+                    vm.errorMessage = error;
                 });
         }
 

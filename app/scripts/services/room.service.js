@@ -79,6 +79,9 @@
                 .$loaded()
                 .then(rooms => {
                     const roomKey = _.findKey(rooms, room => _.get(room, 'roomCode') === roomCode);
+                    if (!roomKey) {
+                        deferred.reject('Invalid Room Code!');
+                    }
                     roomData = rooms[roomKey];
                     deferred.resolve({ roomId: roomKey, data: roomData });
                 });
@@ -94,7 +97,8 @@
             const deferred = $q.defer();
             getRoomByCode(roomCode)
                 .then(roomData => _addPlayerToRoom(roomData.roomId, roomCode, userName, roomData.data))
-                .then(newUserObjectPromise => deferred.resolve(newUserObjectPromise));
+                .then(newUserObjectPromise => deferred.resolve(newUserObjectPromise))
+                .catch(error =>  deferred.reject(error));
             return deferred.promise;
         }
 

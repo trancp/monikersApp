@@ -10,6 +10,9 @@
          class="u-height-100 u-display-flex">
         <div ng-style="{ 'flex': '10' }"
              class="u-display-flex u-flex-column">
+            <div ng-bind="$ctrl.errorMessage"
+                 class="colour-red u-fontGotham-Medium u-textCenter u-fontSize-14">
+            </div>
             <div layout="row" class="u-display-flex flex-1">
                 <span flex></span>
                 <md-input-container ng-style="{ 'flex': '7' }"
@@ -17,10 +20,12 @@
                     <label ng-bind="'What\'s the room code?'"
                            class="u-fontGotham-Medium u-colour-grey u-textCenter u-fontSize-18">
                     </label>
+                    </label>
                     <input maxlength="6"
                            ng-model="$ctrl.user.roomCode"
                            class="u-textCenter"
-                           ng-style="{ 'border-colour': '#A29292' }">
+                           ng-style="{ 'border-colour': '#A29292' }"
+                           ng-change="$ctrl.clearErrorMessage()">
                 </md-input-container>
                 <span flex></span>
             </div>
