@@ -1,8 +1,9 @@
 <div class="u-height-100">
     <div class="u-display-flex">
-        <div
-            class="u-width-100 u-textUppercase colour-white bg-colour-babyBlue u-fontSize-18 u-padding-10-20 u-fontGotham-Medium"
-            ng-bind="'Monikers'">
+        <div ui-sref="home"
+             class="u-width-100 u-textUppercase colour-white bg-colour-babyBlue u-fontSize-18 u-padding-10-20 u-fontGotham-Medium"
+             ng-style="{ 'cursor': 'pointer' }"
+             ng-bind="'Monikers'">
         </div>
         <div ng-bind="::'#'+$ctrl.roomData.roomCode"
              class="flex-1 bg-colour-babyBlue colour-white u-fontSize-18 u-padding-10-20 u-fontGotham-Medium u-textRight">
