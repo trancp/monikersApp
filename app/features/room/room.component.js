@@ -45,6 +45,7 @@
         vm.user = {};
         vm.teamsLabels = { 'Team One': true, 'Team Two': false };
         vm.players = [];
+        vm.userId = USER_ID;
 
         _.assign(vm, {
             $onInit,

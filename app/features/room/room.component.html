@@ -31,7 +31,6 @@
         </div>
         <div ng-bind="'Team Two'"
              class="flex-2 u-fontGotham-Medium u-fontSize-18 colour-grey u-textCenter u-padding-20">
-
         </div>
     </div>
     <div class="u-display-flex u-flex-column"
@@ -50,7 +49,8 @@
                            md-svg-icon="checkmark" aria-label="submitted">
                   </md-icon>
               </span>
-              <span class="u-fontSize-18 u-fontGotham-Medium flex-3 colour-grey"
+              <span class="u-fontSize-18 u-fontGotham-Medium flex-3"
+                    ng-class="{ 'colour-grey':  $ctrl.userId !== playerId, 'colour-babyBlue':  $ctrl.userId === playerId }"
                     ng-bind="player.userName">
               </span>
               <div class="u-display-inlineBlock flex-1"

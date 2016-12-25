@@ -198,6 +198,12 @@
 a {
   color: white; }
 
+.u-height-calc {
+  height: 100%;
+  height: -moz-calc(100% - 102px);
+  height: -webkit-calc(100% - 102px);
+  height: calc(100% - 102px); }
+
 .c-btn {
   font-family: 'GothamRounded-Medium';
   border-radius: 10px;

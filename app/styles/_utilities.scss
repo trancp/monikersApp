@@ -123,11 +123,11 @@
 }
 
 .main {
-    height:100vh;
+    height: 100vh;
 }
 
 .u-opacity-03 {
-    opacity:0.3;
+    opacity: 0.3;
 }
 
 .u-border-standard {
@@ -152,5 +152,12 @@
 
 a {
     color: white;
+}
+
+.u-height-calc {
+    height: 100%;
+    height: -moz-calc(100% - 102px);
+    height: -webkit-calc(100% - 102px);
+    height: calc(100% - 102px);
 }
 

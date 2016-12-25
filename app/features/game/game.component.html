@@ -41,10 +41,9 @@
             </div>
         </div>
     </div>
-    <div class="u-display-flex u-flex-column"
-         ng-style="{ 'height': 'calc(100% - 102px'}">
+    <div class="u-display-flex u-flex-column u-height-calc">
         <div ng-if="!($ctrl.isPlayersTurn() && $ctrl.roomData.status.timer)"
-             class="flex-1 u-padding-10">
+             class="flex-1 u-padding-10 u-height-calc">
             <div ng-repeat="player in $ctrl.roomData.status.turnOrder track by $index">
                 <div ng-if="player.turn"
                      class="u-fontSize-36 u-fontGotham-Bold"
@@ -59,7 +58,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex-1"
+        <div class="flex-1 u-height-calc"
              ng-if="$ctrl.isPlayersTurn() && $ctrl.roomData.status.timer">
             <div class="u-height-100 u-display-flex">
                 <div class="flex-1"></div>
