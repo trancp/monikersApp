@@ -41,8 +41,7 @@
                                     const userId = _.findKey(players, player => _.isEqual(player.userName, $stateParams.userName));
                                     return { roomId: roomData.roomId, roomData: roomData.data, userId };
                                 });
-                            }],
-                            userData: ['$localStorage', 'roomData', 'userService', ($localStorage, roomData, userService) => userService.getUserById($localStorage._id || roomData.userId)]
+                            }]
                         }
                     })
                     .state('game', {
@@ -55,8 +54,7 @@
                                     const userId = _.findKey(players, player => _.isEqual(player.userName, $stateParams.userName));
                                     return { roomId: roomData.roomId, roomData: roomData.data, userId };
                                 });
-                            }],
-                            userData: ['$localStorage', 'roomData', 'userService', ($localStorage, roomData, userService) => userService.getUserById($localStorage._id || roomData.userId)]
+                            }]
                         }
                     });
 

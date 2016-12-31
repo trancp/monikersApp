@@ -6,14 +6,13 @@
         .service('userService', userService);
 
     userService.$inject = [
-        '$firebaseArray',
         '$firebaseObject',
         '$q',
         'FBURL',
         '_'
     ];
 
-    function userService($firebaseArray, $firebaseObject, $q, FBURL, _) {
+    function userService($firebaseObject, $q, FBURL, _) {
         const USER_REF = new Firebase(FBURL + 'users');
         let userData;
         const userService = {

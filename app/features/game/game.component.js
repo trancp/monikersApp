@@ -1,26 +1,9 @@
 (function () {
     'use strict';
 
-    angular
-        .module('monikersApp')
-        .component('game', game());
-
-    function game() {
-        var component = {
-            templateUrl: '../app/features/game/game.component.html',
-            controller: GameController,
-            bindings: {
-                roomInformation: '<'
-            }
-        };
-        return component;
-    }
-
-    GameController.$inject = ['$localStorage', '$mdDialog', '$stateParams', 'roomsService', 'Rooms', 'userService', '$scope', '$state'];
-
-    function GameController($localStorage, $mdDialog, $stateParams, roomsService, Rooms, userService, $scope, $state) {
+    function GameController($mdDialog, $stateParams, roomsService, userService, $scope, $state, _) {
         const vm = this;
-        const USER_ID = $localStorage._id || vm.roomInformation.userId;
+        const USER_ID = vm.roomInformation.userId;
 
         vm.isLoading = false;
         vm.isLoadingPass = false;
@@ -49,14 +32,14 @@
             vm.isLoading = true;
             vm.isLoadingPass = true;
 
-            vm.roomData = roomsService.getRoom();
+            vm.roomData = _.get(vm, 'roomInformation.roomData');
             vm.roomPlayerIds = _.get(vm, 'roomData.players');
             vm.isUser = _.has(vm.roomPlayerIds, USER_ID);
             if (!vm.isUser) {
                 return;
             }
-            vm.user = userService.getUser();
-            roomsService.getRoomData(vm.user.roomId).then(room => {
+            vm.user = _.get(vm, `roomData.players.${USER_ID}`);
+            roomsService.getRoomData(_.get(vm, 'roomInformation.roomId')).then(room => {
                 _.set(vm, 'roomData', room);
                 _.set(vm, 'isLoading', false);
                 _.set(vm, 'isLoadingPass', false);
@@ -75,7 +58,8 @@
         function isEveryoneStarted() {
             const roomPlayers = _.map(_.get(vm, 'roomData.players'));
             const playersReady = _.filter(roomPlayers, player => player.started);
-            return playersReady.length === roomPlayers.length;        }
+            return playersReady.length === roomPlayers.length;
+        }
 
         function isLastPlayer() {
             return _.get(vm, 'roomData.status.turnOrder').length - 1 === _.findIndex(_.get(vm, 'roomData.status.turnOrder'), { turn: true });
@@ -206,5 +190,27 @@
             }
         });
     }
+
+    GameController.$inject = [
+        '$mdDialog',
+        '$stateParams',
+        'roomsService',
+        'userService',
+        '$scope',
+        '$state',
+        '_'
+    ];
+
+    const game = {
+        templateUrl: '../app/features/game/game.component.html',
+        controller: GameController,
+        bindings: {
+            roomInformation: '<'
+        }
+    };
+
+    angular
+        .module('monikersApp')
+        .component('game', game);
 
 })();

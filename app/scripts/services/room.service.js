@@ -1,3 +1,5 @@
+/* globals Firebase */
+
 (function () {
     'use strict';
 
@@ -10,14 +12,25 @@
         '$firebaseObject',
         '$q',
         'FBURL',
-        'userService',
         '_'
     ];
 
-    function roomsService($firebaseArray, $firebaseObject, $q, FBURL, userService, _) {
+    function roomsService($firebaseArray, $firebaseObject, $q, FBURL, _) {
         const vm = this;
         const ROOM_CODE_LENGTH = 6;
         const DEFAULT_PLAYER_STATUS = { submitted: false, teamOne: true, started: false };
+        const DEFAULT_GAME_STATUS = {
+            readyToStart: false,
+            started: false,
+            round: '1',
+            teamTurn: '',
+            ended: false,
+            roomMaster: '',
+            timer: false,
+            numOfWords: 5,
+            score: [0, 0],
+            turnOrder: ''
+        };
         const DEFAULT_NEW_GAME_STATUS = {
             status: {
                 readyToStart: false,
@@ -48,7 +61,6 @@
             nextPlayerturn,
             removePlayer,
             removeWords,
-            setUpDefaultPlayerStatus,
             startGame,
             startNewGame,
             submitWords,
@@ -62,9 +74,12 @@
         function createRoom(userName) {
             const deferred = $q.defer();
             const newUserObjectPromise = _getRooms()
-                .then(rooms => _createNewRoomCode(rooms))
-                .then(roomCode => _addNewRoom(roomCode))
-                .then(roomInfo => _addPlayerToRoom(roomInfo.roomId, roomInfo.roomCode, userName));
+                .then(rooms => {
+                    const newRoomCode = _createNewRoomCode(rooms);
+                    return _addNewRoom(newRoomCode);
+                })
+                .then(roomInfo => _addPlayerToRoom(roomInfo.roomId, roomInfo.roomCode, userName, true))
+                .then(creatorInfo => _setPlayerStatusDefaults(creatorInfo));
             deferred.resolve(newUserObjectPromise);
             return deferred.promise;
         }
@@ -96,9 +111,10 @@
         function joinRoom(roomCode, userName) {
             const deferred = $q.defer();
             getRoomByCode(roomCode)
-                .then(roomData => _addPlayerToRoom(roomData.roomId, roomCode, userName, roomData.data))
+                .then(roomData => _addPlayerToRoom(roomData.roomId, roomCode, userName, false, roomData.data))
+                .then(newUserInfo => _setPlayerStatusDefaults(newUserInfo))
                 .then(newUserObjectPromise => deferred.resolve(newUserObjectPromise))
-                .catch(error =>  deferred.reject(error));
+                .catch(error => deferred.reject(error));
             return deferred.promise;
         }
 
@@ -131,10 +147,9 @@
         }
 
         function _nextRound(round) {
-            const nextRound = 3 > round
-                ? parseInt(round) + 1
+            return 3 > round
+                ? parseInt(round, 10) + 1
                 : 1;
-            return nextRound;
         }
 
         function _setNextPlayerTurn(turnOrder) {
@@ -165,15 +180,6 @@
                 .then(words => {
                     words.$remove();
                     updateGameStatus(roomId, 'readyToStart', false);
-                });
-        }
-
-        function setUpDefaultPlayerStatus(roomId, userId) {
-            $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}/players/${userId}`))
-                .$loaded()
-                .then(user => {
-                    _.assign(user, DEFAULT_PLAYER_STATUS);
-                    user.$save();
                 });
         }
 
@@ -284,30 +290,20 @@
             const deferred = $q.defer();
             $firebaseArray(ROOMS_REF)
                 .$add({
-                    created_at: new Date().getTime(),
+                    created_at: `${new Date()}`,
                     roomCode,
-                    status: {
-                        readyToStart: false,
-                        started: false,
-                        round: '1',
-                        teamTurn: '',
-                        ended: false,
-                        roomMaster: '',
-                        timer: false,
-                        numOfWords: 0,
-                        score: [0, 0]
-                    }
+                    status: DEFAULT_GAME_STATUS
                 })
                 .then(roomId => {
                     deferred.resolve({
-                        roomId: roomId.key(),
-                        roomCode
+                        roomCode,
+                        roomId: roomId.key()
                     });
                 });
             return deferred.promise;
         }
 
-        function _addPlayerToRoom(roomId, roomCode, userName, roomData) {
+        function _addPlayerToRoom(roomId, roomCode, userName, isCreator, roomData) {
             const userNames = _.map(_.get(roomData, 'players'), player => player.userName);
             const uniqueUsername = _generateUniqueUsername(userNames, userName, 0, userName);
             const deferred = $q.defer();
@@ -316,16 +312,34 @@
                     userName: uniqueUsername
                 })
                 .then(userId => deferred.resolve({
-                    _id: userId.key(),
-                    userName: uniqueUsername,
+                    isCreator,
                     roomCode,
-                    roomId
+                    roomId,
+                    _id: userId.key(),
+                    userName: uniqueUsername
                 }));
             return deferred.promise;
         }
 
-        function _checkIfRoomExists(rooms, generatedCode) {
-            return _.includes(rooms, room => _.get(room, 'roomCode') === generatedCode);
+        function _setPlayerStatusDefaults(userInfo) {
+            const _id = userInfo._id;
+            const isCreator = userInfo.isCreator;
+            const roomCode = userInfo.roomCode;
+            const roomId = userInfo.roomId;
+            const userName = userInfo.userName;
+
+            const deferred = $q.defer();
+            $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}`))
+                .$loaded()
+                .then(room => {
+                    _.assign(_.get(room, `players.${_id}`), DEFAULT_PLAYER_STATUS);
+                    if (isCreator) {
+                        _.set(room, 'status.roomMaster', _id);
+                    }
+                    room.$save();
+                    deferred.resolve({ _id, roomCode, roomId, userName });
+                });
+            return deferred.promise;
         }
 
         function _createNewRoomCode(rooms) {
@@ -348,21 +362,18 @@
         }
 
         function _findUnexistingRoomCode(rooms) {
-            let generatedRoomCode = '';
-            while ('' === generatedRoomCode) {
-                generatedRoomCode = Math.floor((Math.random() * Math.pow(10, ROOM_CODE_LENGTH))).toString();
-                generatedRoomCode = _checkIfRoomExists(rooms, generatedRoomCode)
-                    ? ''
-                    : generatedRoomCode;
-            }
-            return generatedRoomCode;
+            const generatedRoomCode = Math.floor((Math.random() * Math.pow(10, ROOM_CODE_LENGTH))).toString();
+            const roomExists = _.find(rooms, { roomCode: generatedRoomCode });
+            return roomExists
+                ? _findUnexistingRoomCode(rooms)
+                : generatedRoomCode;
         }
 
         function _generateUniqueUsername(usernames, desiredUserName, index, unmodifiedUserName) {
             const userNameExists = _.includes(usernames, desiredUserName);
             if (userNameExists) {
                 const newDesiredUserName = `${unmodifiedUserName}-${index}`;
-                return _generateUniqueUsername(usernames, newDesiredUserName, ++index, desiredUserName);
+                return _generateUniqueUsername(usernames, newDesiredUserName, ++index, unmodifiedUserName);
             }
             return desiredUserName;
         }
@@ -396,7 +407,7 @@
                     return _createWordBank(roomId, wordBank)
                         .then(() => {
                             updateGameStatus(roomId, 'ended', false);
-                            deferred.resolve(updateGameStatus(roomId, 'readyToStart', true))
+                            deferred.resolve(updateGameStatus(roomId, 'readyToStart', true));
                         });
                 });
             return deferred.promise;
@@ -419,6 +430,5 @@
             });
             return { turnOrder, teamTurn: firstToGo };
         }
-
     }
 })();

@@ -1,39 +1,9 @@
 (function () {
     'use strict';
 
-    angular
-        .module('monikersApp')
-        .component('room', roomComponent());
-
-    function roomComponent() {
-        const component = {
-            templateUrl: '../app/features/room/room.component.html',
-            controller: RoomComponentController,
-            bindings: {
-                roomInformation: '<'
-            }
-        };
-
-        return component;
-    }
-
-    RoomComponentController.$inject = [
-        '$localStorage',
-        '$mdDialog',
-        '$q',
-        '$rootScope',
-        '$sessionStorage',
-        '$state',
-        '$stateParams',
-        'Rooms',
-        'roomsService',
-        'userService',
-        '_'
-    ];
-
-    function RoomComponentController($localStorage, $mdDialog, $q, $rootScope, $sessionStorage, $state, $stateParams, Rooms, roomsService, userService, _) {
+    function RoomComponentController($mdDialog, $state, roomsService, userService, _) {
         const vm = this;
-        const USER_ID = $localStorage._id || vm.roomInformation.userId;
+        const USER_ID = vm.roomInformation.userId;
         const NUM_OF_WORDS = 5;
 
         vm.isLoading = false;
@@ -66,16 +36,16 @@
         function $onInit() {
             vm.isLoading = true;
 
-            vm.roomData = roomsService.getRoom();
+            vm.roomData = _.get(vm, 'roomInformation.roomData');
             vm.roomPlayerIds = _.get(vm, 'roomData.players');
             vm.isUser = _.has(vm.roomPlayerIds, USER_ID);
             if (!vm.isUser) {
                 return;
             }
-            vm.user = userService.getUser();
+            vm.user = _.get(vm, `roomData.players.${USER_ID}`);
             vm.form = _generateEmptyForm(NUM_OF_WORDS);
-            _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', NUM_OF_WORDS);
-            roomsService.getRoomData(_.get(vm, 'user.roomId')).then(room => _.set(vm, 'roomData', room));
+            // _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', NUM_OF_WORDS);
+            roomsService.getRoomData(_.get(vm, 'roomInformation.roomId')).then(room => _.set(vm, 'roomData', room));
             userService.getUserData(USER_ID).then(user => _.set(vm, 'user', user));
             vm.isLoading = false;
         }
@@ -202,4 +172,24 @@
             return userService.updateUserStatus(userId, statusField, newStatus);
         }
     }
+
+    RoomComponentController.$inject = [
+        '$mdDialog',
+        '$state',
+        'roomsService',
+        'userService',
+        '_'
+    ];
+
+    const roomComponent = {
+        templateUrl: '../app/features/room/room.component.html',
+        controller: RoomComponentController,
+        bindings: {
+            roomInformation: '<'
+        }
+    };
+
+    angular
+        .module('monikersApp')
+        .component('room', roomComponent);
 })();

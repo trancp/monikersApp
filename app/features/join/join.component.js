@@ -15,15 +15,13 @@
     }
 
     JoinRoomController.$inject = [
-        '$localStorage',
-        '$sessionStorage',
         '$state',
         'roomsService',
         'userService',
         '_'
     ];
 
-    function JoinRoomController($localStorage, $sessionStorage, $state, roomsService, userService, _) {
+    function JoinRoomController($state, roomsService, userService, _) {
         const vm = this;
 
         vm.user = {};
@@ -49,8 +47,6 @@
             roomsService
                 .joinRoom(vm.user.roomCode, vm.user.userName)
                 .then(response => {
-                    $localStorage._id = response._id;
-                    _setUpDefaultPlayerStatus(response.roomId, response._id);
                     _createNewUser(response._id, response.userName, response.roomId, false).then(() => {
                         $state.go('room', {
                             roomCode: vm.user.roomCode,
@@ -70,10 +66,6 @@
 
         function _createNewUser(userId, userName, roomId, gameMaster) {
             return userService.createUser(userId, userName, roomId, gameMaster);
-        }
-
-        function _setUpDefaultPlayerStatus(roomId, userId) {
-            roomsService.setUpDefaultPlayerStatus(roomId, userId);
         }
     }
 })();
