@@ -61,6 +61,7 @@
             nextPlayerturn,
             nextRound,
             removePlayer,
+            removeAllWords,
             removeWords,
             startGame,
             startNewGame,
@@ -178,11 +179,30 @@
                 });
         }
 
-        function removeWords(roomId, userId) {
-            return $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}/players/${userId}/words`))
+        function removeAllWords(roomId) {
+            return $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}`))
                 .$loaded()
-                .then(words => {
-                    words.$remove();
+                .then(roomData => {
+                    const players = roomData.players;
+                    roomData.players = _.forEach(players, (player, playerId) => _unSubmitPlayer(player, playerId));
+                    roomData.$save();
+                    updateGameStatus(roomId, 'readyToStart', false);
+                });
+        }
+
+        function _unSubmitPlayer(player) {
+            player.words = '';
+            player.submitted = false;
+            return player;
+        }
+
+        function removeWords(roomId, userId) {
+            return $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}/players/${userId}`))
+                .$loaded()
+                .then(player => {
+                    player.submitted = false;
+                    player.words = '';
+                    player.$save();
                     updateGameStatus(roomId, 'readyToStart', false);
                 });
         }

@@ -72,6 +72,7 @@
                 .icon('gotIt', 'icons/gotIt.svg')
                 .icon('pass', 'icons/pass.svg')
                 .icon('gotItGrey', 'icons/gotItGrey.svg')
-                .icon('passGrey', 'icons/passGrey.svg');
+                .icon('passGrey', 'icons/passGrey.svg')
+                .icon('settings', 'icons/settings.svg');
         }]);
 })();

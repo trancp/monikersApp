@@ -1,0 +1,42 @@
+<div class="u-display-flex u-flex-column u-height-100">
+    <div class="flex-1 colour-babyBlue u-fontGotham-Medium">
+        <div class="u-fontSize-30 u-padding-10-20"
+             ng-bind="::'Settings'">
+        </div>
+        <div class="u-padding-10-20">
+            <div class="u-display-inlineBlock"
+                 ng-bind="::'Number Of Words:'">
+            </div>
+            <div class="u-display-inlineBlock"
+                 ng-style="{ 'padding-left': '5px' }">
+                <md-input-container aria-label="Settings">
+                    <md-select ng-model="$ctrl.numOfWords"
+                               aria-label="Number of Words">
+                        <md-option ng-repeat="number in $ctrl.numOfWordsOptions track by $index"
+                                   ng-value="number">
+                            <span class="colour-babyBlue u-fontGotham-Medium"
+                                  ng-bind="::number">
+                            </span>
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </div>
+    </div>
+    <div>
+        <md-dialog-actions layout="row"
+                           class="layout-row u-textAlign-left">
+            <md-button ng-click="$ctrl.cancel()"
+                       aria-label="Cancel"
+                       ng-style="::{ 'margin-right': '20px' }"
+                       ng-bind="::'Cancel'">
+            </md-button>
+            <md-button ng-click="$ctrl.confirm()"
+                       aria-label="Confirm"
+                       ng-bind="::'Confirm'">
+            </md-button>
+        </md-dialog-actions>
+    </div>
+</div>
+
+

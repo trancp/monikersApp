@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function RoomComponentController($mdDialog, $state, roomsService, userService, _) {
+    function RoomComponentController($mdDialog, $scope, $state, roomsService, userService, _) {
         const vm = this;
         const USER_ID = vm.roomInformation.userId;
         const NUM_OF_WORDS = 5;
@@ -26,6 +26,7 @@
             isGameStarted,
             hasSubmitted,
             submitWords,
+            openSettingsDialog,
             participantIsMaster,
             removeUser,
             startGame,
@@ -43,13 +44,34 @@
                 return;
             }
             vm.user = _.get(vm, `roomData.players.${USER_ID}`);
-            vm.form = _generateEmptyForm(NUM_OF_WORDS);
-            // _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', NUM_OF_WORDS);
             roomsService.getRoomData(_.get(vm, 'roomInformation.roomId'))
-                .then(room => _.set(vm, 'roomData', room));
+                .then(room => getRoomDataSuccess(room));
             userService.getUserData(USER_ID)
                 .then(user => _.set(vm, 'user', user));
             vm.isLoading = false;
+
+        }
+
+        function getRoomDataSuccess(room) {
+            _.set(vm, 'roomData', room);
+            vm.numOfWords = vm.roomData.status.numOfWords;
+            vm.form = _generateEmptyForm(vm.numOfWords || NUM_OF_WORDS);
+            $scope.$watch(() => vm.roomData.status.numOfWords, (numOfWords, prevNumWords) => _revokeSubmittedWords(numOfWords, prevNumWords));
+        }
+
+        function _revokeSubmittedWords(numOfWords, prevNumWords) {
+            if (_.isEqual(numOfWords, prevNumWords)) {
+                return;
+            }
+            _.set(vm, 'numOfWords', numOfWords);
+            vm.form = _generateNewFormFields(numOfWords);
+            return _removeAllSubmittedWords();
+        }
+
+        function _removeAllSubmittedWords() {
+            vm.isLoading = true;
+            roomsService.removeAllWords(vm.user.roomId)
+                .then(() => _removeWordsSuccess());
         }
 
         function editSubmittedWords(event) {
@@ -59,11 +81,8 @@
         }
 
         function _removeWordsSuccess(event) {
-            return _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', false)
-                .then(() => {
-                    _.set(vm, 'isLoading', false);
-                    showForm(event);
-                });
+            _.set(vm, 'isLoading', false);
+            showForm(event);
         }
 
         function getPlayers() {
@@ -95,6 +114,24 @@
             return vm.submitted
                 || _.get(vm, 'user.status.submitted')
                 || _.get(vm, `roomData.players[${USER_ID}].submitted`);
+        }
+
+        function openSettingsDialog() {
+            return $mdDialog.show({
+                clickOutsideToClose: true,
+                templateUrl: '../app/features/settings/settings.component.html',
+                controller: 'settings',
+                controllerAs: '$ctrl',
+                locals: {
+                    currentNumWords: vm.numOfWords
+                }
+            })
+                .then(numOfWordsSelected => {
+                    if (!numOfWordsSelected) {
+                        return;
+                    }
+                    _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', numOfWordsSelected);
+                });
         }
 
         function participantIsMaster() {
@@ -177,8 +214,15 @@
             return form;
         }
 
+        function _generateNewFormFields(numOfWords) {
+            const pickFields = _.map(Array(numOfWords), (value, index) => `${index}`);
+            const copyOldForm = _.pick(vm.form, pickFields);
+            const emptyForm = _generateEmptyForm(numOfWords);
+            return _.assign(emptyForm, copyOldForm);
+        }
+
         function _hasEmptyFormFields(form) {
-            return NUM_OF_WORDS !== _.compact(_.values(form)).length;
+            return vm.numOfWords !== _.compact(_.values(form)).length;
         }
 
         function _updateGameStatus(roomId, statusField, newStatus) {
@@ -196,6 +240,7 @@
 
     RoomComponentController.$inject = [
         '$mdDialog',
+        '$scope',
         '$state',
         'roomsService',
         'userService',

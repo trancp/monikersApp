@@ -1,12 +1,19 @@
 <div class="u-height-100">
-    <div class="u-display-flex">
+    <div class="u-display-flex bg-colour-babyBlue colour-white u-fontSize-18 u-padding-10-20 u-fontGotham-Medium">
         <div ui-sref="home"
-             class="u-width-100 u-textUppercase colour-white bg-colour-babyBlue u-fontSize-18 u-padding-10-20 u-fontGotham-Medium"
+             class="flex-1 u-width-100 u-textUppercase u-padding-10-20 u-fontGotham-Medium"
              ng-style="{ 'cursor': 'pointer' }"
              ng-bind="'Monikers'">
         </div>
-        <div ng-bind="::'#'+$ctrl.roomData.roomCode"
-             class="flex-1 bg-colour-babyBlue colour-white u-fontSize-18 u-padding-10-20 u-fontGotham-Medium u-textRight">
+        <div class="flex-1 u-padding-10-20 u-textCenter"
+             ng-bind="::'#'+$ctrl.roomData.roomCode"></div>
+        <div ng-if="$ctrl.participantIsMaster()"
+             class="flex-1 u-padding-10-20 u-textRight"
+             ng-style="{ 'cursor': 'pointer' }">
+            <md-icon md-svg-icon="settings"
+                     aria-label="Settings"
+                     ng-click="$ctrl.openSettingsDialog()">
+            </md-icon>
         </div>
     </div>
     <div class="u-display-flex u-padding-10-0">
@@ -56,18 +63,17 @@
               <div class="u-display-inlineBlock flex-1"
                    ng-style="{ 'min-width': '40px'}">
                   <span ng-if="playerId === $ctrl.roomData.status.roomMaster">
-                  <md-icon md-svg-icon="key" aria-label="master">
-                  </md-icon>
-              </span>
+                      <md-icon md-svg-icon="key" aria-label="master">
+                      </md-icon>
+                  </span>
                   <span ng-if="$ctrl.participantIsMaster()">
-                <span ng-if="playerId !== $ctrl.roomData.status.roomMaster">
-                    <md-icon md-svg-icon="remove" aria-label="remove"
-                             ng-click="$ctrl.removeUser(playerId)">
-                    </md-icon>
-                </span>
-              </span>
+                    <span ng-if="playerId !== $ctrl.roomData.status.roomMaster">
+                        <md-icon md-svg-icon="remove" aria-label="remove"
+                                 ng-click="$ctrl.removeUser(playerId)">
+                        </md-icon>
+                    </span>
+                  </span>
               </div>
-
         </div>
         </span>
             </div>
