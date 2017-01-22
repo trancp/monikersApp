@@ -51,8 +51,7 @@
 
         function currentTeamsTurn() {
             const playersTurn = _.find(_.get(vm, 'roomData.status.turnOrder'), { turn: true });
-            const teamsTurn = playersTurn.teamOne;
-            return teamsTurn;
+            return playersTurn.teamOne;
         }
 
         function isEveryoneStarted() {
@@ -62,16 +61,19 @@
         }
 
         function isLastPlayer() {
-            return _.get(vm, 'roomData.status.turnOrder').length - 1 === _.findIndex(_.get(vm, 'roomData.status.turnOrder'), { turn: true });
+            return _.get(vm, 'roomData.status.turnOrder').length - 1
+                === _.findIndex(_.get(vm, 'roomData.status.turnOrder'), { turn: true });
         }
 
         function isLastPlayerAndLastTurn() {
             return isLastPlayer()
-                && (3 === _.get(vm, 'roomData.status.round'));
+                && (3
+                === _.get(vm, 'roomData.status.round'));
         }
 
         function isPlayersTurn() {
-            return USER_ID === _.find(_.get(vm, 'roomData.status.turnOrder'), { turn: true })._id;
+            return USER_ID
+                === _.find(_.get(vm, 'roomData.status.turnOrder'), { turn: true })._id;
         }
 
         function getWordBank(roomData) {
@@ -111,13 +113,16 @@
             }
             vm.isLoading = true;
             _.set(_.get(vm, `roomData.wordBank[${originalIndex}]`), 'active', false);
-            _updateScoreAndWords(vm.user.roomId, vm.roomData.wordBank, currentTeamsTurn()).then(room => {
-                vm.indexArray = getActiveIndices(room.wordBank);
-                if (!_.get(vm, `indexArray[${vm.index}]`)) {
-                    vm.index = _.random(0, vm.indexArray.length - 1);
-                }
-                vm.isLoading = false;
-            });
+            _updateScoreAndWords(vm.user.roomId, vm.roomData.wordBank, currentTeamsTurn())
+                .then(room => gotItSuccess(room));
+        }
+
+        function gotItSuccess(room) {
+            vm.indexArray = getActiveIndices(room.wordBank);
+            if (!_.get(vm, `indexArray[${vm.index}]`)) {
+                vm.index = _.random(0, vm.indexArray.length - 1);
+            }
+            vm.isLoading = false;
         }
 
         function _updateScoreAndWords(roomId, field, newStatus) {
@@ -133,23 +138,28 @@
                 return;
             }
             vm.isLoadingNextPlayer = true;
-            roomsService.nextPlayerturn(vm.user.roomId).then(() => {
-                vm.isLoadingNextPlayer = false;
-            });
+            return roomsService.nextPlayerturn(vm.user.roomId)
+                .then(() => _.set(vm, 'isLoadingNextPlayer', false));
         }
 
         function startNewGame(event) {
             if (vm.isLoading) {
                 return;
             }
-            _showConfirmDialog(event).then(() => {
-                vm.isLoadingNextPlayer = true;
-                roomsService.startNewGame(vm.user.roomId).then(() => {
-                    $state.go('room', {
-                        roomCode: $stateParams.roomCode,
-                        userName: vm.user.userName
-                    });
-                });
+            _showConfirmDialog(event)
+                .then(() => dialogSuccess());
+        }
+
+        function dialogSuccess() {
+            vm.isLoadingNextPlayer = true;
+            return roomsService.startNewGame(vm.user.roomId)
+                .then(() => _goToRoom());
+        }
+
+        function _goToRoom() {
+            return $state.go('room', {
+                roomCode: $stateParams.roomCode,
+                userName: vm.user.userName
             });
         }
 
@@ -162,13 +172,13 @@
 
         function startTimer() {
             vm.isLoading = true;
-            _updateGameStatus(vm.user.roomId, 'timer', true).then(() => {
-                vm.isLoading = false;
-            });
+            _updateGameStatus(vm.user.roomId, 'timer', true)
+                .then(() => _.set(vm, 'isLoading', false));
         }
 
         function isLastRoundAndNoMoreWords() {
-            return 3 === _.get(vm, 'roomData.status.round')
+            return 3
+                === _.get(vm, 'roomData.status.round')
                 && !getActiveIndices().length;
         }
 
@@ -183,7 +193,7 @@
             return $mdDialog.show(confirm);
         }
 
-        $scope.$on('timer-stopped', function () {
+        $scope.$on('timer-stopped', () => {
             _updateGameStatus(vm.user.roomId, 'timer', false);
             if (isLastPlayerAndLastTurn()) {
                 _updateGameStatus(vm.user.roomId, 'ended', true);
@@ -212,5 +222,4 @@
     angular
         .module('monikersApp')
         .component('game', game);
-
 })();

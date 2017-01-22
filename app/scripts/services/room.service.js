@@ -175,7 +175,7 @@
         }
 
         function removeWords(roomId, userId) {
-            $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}/players/${userId}/words`))
+            return $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}/players/${userId}/words`))
                 .$loaded()
                 .then(words => {
                     words.$remove();
@@ -229,7 +229,7 @@
         }
 
         function submitWords(roomId, userId, words) {
-            $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}/players/${userId}/words`))
+            return $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}/players/${userId}/words`))
                 .$loaded()
                 .then(user => {
                     _.assign(user, _.map(words, word => {
@@ -272,13 +272,13 @@
                     _.set(room, 'wordBank', wordBank);
                     const currentTeamScore = teamsTurn
                         ? {
-                        teamScoreIndex: 0,
-                        score: room.status.score[0]
-                    }
+                            teamScoreIndex: 0,
+                            score: room.status.score[0]
+                        }
                         : {
-                        teamScoreIndex: 1,
-                        score: room.status.score[1]
-                    };
+                            teamScoreIndex: 1,
+                            score: room.status.score[1]
+                        };
                     room.status.score[currentTeamScore.teamScoreIndex] = currentTeamScore.score + 1;
                     room.$save();
                     deferred.resolve(room);

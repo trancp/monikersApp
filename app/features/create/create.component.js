@@ -19,16 +19,21 @@
 
             vm.isLoading = true;
 
-            roomsService
+            return roomsService
                 .createRoom(vm.user.userName)
-                .then(response => {
-                    _createNewUser(response._id, vm.user.userName, response.roomId, true).then(() => {
-                        $state.go('room', {
-                            roomCode: response.roomCode,
-                            userName: vm.user.userName
-                        });
-                    });
-                });
+                .then(response => createRoomSuccess(response));
+        }
+
+        function createRoomSuccess(response) {
+            return _createNewUser(response._id, vm.user.userName, response.roomId, true)
+                .then(() => goToRoom());
+        }
+
+        function goToRoom() {
+            return $state.go('room', {
+                roomCode: response.roomCode,
+                userName: vm.user.userName
+            });
         }
 
         function _createNewUser(userId, userName, roomId, gameMaster) {

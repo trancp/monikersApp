@@ -45,18 +45,25 @@
             vm.user = _.get(vm, `roomData.players.${USER_ID}`);
             vm.form = _generateEmptyForm(NUM_OF_WORDS);
             // _updateGameStatus(_.get(vm, 'user.roomId'), 'numOfWords', NUM_OF_WORDS);
-            roomsService.getRoomData(_.get(vm, 'roomInformation.roomId')).then(room => _.set(vm, 'roomData', room));
-            userService.getUserData(USER_ID).then(user => _.set(vm, 'user', user));
+            roomsService.getRoomData(_.get(vm, 'roomInformation.roomId'))
+                .then(room => _.set(vm, 'roomData', room));
+            userService.getUserData(USER_ID)
+                .then(user => _.set(vm, 'user', user));
             vm.isLoading = false;
         }
 
         function editSubmittedWords(event) {
             vm.isLoading = true;
-            roomsService.removeWords(vm.user.roomId, USER_ID);
-            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', false).then(() => {
-                vm.isLoading = false;
-            });
-            showForm(event);
+            roomsService.removeWords(vm.user.roomId, USER_ID)
+                .then(() => _removeWordsSuccess(event));
+        }
+
+        function _removeWordsSuccess(event) {
+            return _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', false)
+                .then(() => {
+                    _.set(vm, 'isLoading', false);
+                    showForm(event);
+                });
         }
 
         function getPlayers() {
@@ -85,11 +92,14 @@
         }
 
         function hasSubmitted() {
-            return vm.submitted || _.get(vm, 'user.status.submitted') || _.get(vm, `roomData.players[${USER_ID}].submitted`);
+            return vm.submitted
+                || _.get(vm, 'user.status.submitted')
+                || _.get(vm, `roomData.players[${USER_ID}].submitted`);
         }
 
         function participantIsMaster() {
-            return _.get(vm, 'roomData.status.roomMaster') === USER_ID;
+            return USER_ID
+                === _.get(vm, 'roomData.status.roomMaster');
         }
 
         function removeUser(playerId) {
@@ -98,7 +108,15 @@
         }
 
         function startGame() {
-            roomsService.startGame(vm.user.roomId, USER_ID).then(() => $state.go('game', { roomCode: vm.roomData.roomCode, userName: vm.user.userName }));
+            roomsService.startGame(vm.user.roomId, USER_ID)
+                .then(() => _goToGame());
+        }
+
+        function _goToGame() {
+            return $state.go('game', {
+                roomCode: vm.roomData.roomCode,
+                userName: vm.user.userName
+            });
         }
 
         function submitWords() {
@@ -107,10 +125,13 @@
                 return;
             }
             vm.isLoading = true;
-            roomsService.submitWords(vm.user.roomId, USER_ID, vm.form);
-            _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', true).then(() => {
-                vm.isLoading = false;
-            });
+            return roomsService.submitWords(vm.user.roomId, USER_ID, vm.form)
+                .then(() => _submitWordsSuccess());
+        }
+
+        function _submitWordsSuccess() {
+            return _updatePlayerStatus(vm.user.roomId, USER_ID, 'submitted', true)
+                .then(() => _.set(vm, 'isLoading', false));
         }
 
         function switchTeams() {
