@@ -59,6 +59,7 @@
             getRoomData,
             joinRoom,
             nextPlayerturn,
+            nextRound,
             removePlayer,
             removeWords,
             startGame,
@@ -119,23 +120,26 @@
         }
 
         function nextPlayerturn(roomId) {
-            const deferred = $q.defer();
-            $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}`))
+            return $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}`))
                 .$loaded()
                 .then(room => {
-                    if (_isLastPlayer(room.status.turnOrder) || 0 === _numActiveWords(room.wordBank)) {
-                        room.status.round = _nextRound(room.status.round);
-                        room = _reactivateWords(room);
-                        room = shufflePlayers(room);
-                    } else {
-                        room.status.turnOrder = _setNextPlayerTurn(room.status.turnOrder);
-                        room.wordBank = _.shuffle(room.wordBank);
-                    }
+                    room.status.turnOrder = _setNextPlayerTurn(room.status.turnOrder);
+                    room.wordBank = _.shuffle(room.wordBank);
                     room.status.timer = false;
                     room.$save();
-                    deferred.resolve(room);
                 });
-            return deferred.promise;
+        }
+
+        function nextRound(roomId) {
+            return $firebaseObject(new Firebase(`${FBURL}rooms/${roomId}`))
+                .$loaded()
+                .then(room => {
+                    room.status.round = _nextRound(room.status.round);
+                    room = _reactivateWords(room);
+                    room = shufflePlayers(room);
+                    room.status.timer = false;
+                    room.$save();
+                });
         }
 
         function _isLastPlayer(turnOrder) {
@@ -272,13 +276,13 @@
                     _.set(room, 'wordBank', wordBank);
                     const currentTeamScore = teamsTurn
                         ? {
-                            teamScoreIndex: 0,
-                            score: room.status.score[0]
-                        }
+                        teamScoreIndex: 0,
+                        score: room.status.score[0]
+                    }
                         : {
-                            teamScoreIndex: 1,
-                            score: room.status.score[1]
-                        };
+                        teamScoreIndex: 1,
+                        score: room.status.score[1]
+                    };
                     room.status.score[currentTeamScore.teamScoreIndex] = currentTeamScore.score + 1;
                     room.$save();
                     deferred.resolve(room);

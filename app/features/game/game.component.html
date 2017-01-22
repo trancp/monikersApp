@@ -119,9 +119,9 @@
                                                 </button>
                                                 <button ng-if="$ctrl.isLoading"
                                                         ng-style="{ 'background-color': 'transparent', 'border': 'none' }"
-                                                    <md-icon md-svg-icon="gotItGrey" aria-label="Got It!"
-                                                             ng-style="{ 'height': '100px', 'width': '100px' }">
-                                                    </md-icon>
+                                                <md-icon md-svg-icon="gotItGrey" aria-label="Got It!"
+                                                         ng-style="{ 'height': '100px', 'width': '100px' }">
+                                                </md-icon>
                                                 </button>
                                             </div>
                                             <div class=flex-1></div>
@@ -137,8 +137,7 @@
         </div>
         <div ng-if="$ctrl.isPlayersTurn()">
             <div class="u-padding-20">
-                <div
-                    ng-if="!$ctrl.roomData.status.timer && !$ctrl.isLastRoundAndNoMoreWords()">
+                <div ng-if="!$ctrl.roomData.status.timer && !$ctrl.isLastRoundAndNoMoreWords()">
                     <button ng-bind="'Start Timer'"
                             ng-disabled="$ctrl.isLoading"
                             ng-click="$ctrl.startTimer()"
@@ -146,19 +145,22 @@
                     </button>
                 </div>
                 <div ng-if="!$ctrl.isLastPlayerAndLastTurn() && !$ctrl.isLastRoundAndNoMoreWords()">
-                    <button ng-disabled="$ctrl.isLoadingNextPlayer"
-                            ng-click="$ctrl.nextPlayersTurn()"
-                            class="c-btn-whiteBlue u-border-babyBlue u-fontGotham-Bold u-padding-10 u-width-100 u-fontSize-18 u-border-radius-10">
-                       <span ng-if="!$ctrl.isLastPlayer() && $ctrl.getActiveIndices().length"
-                             ng-bind="'Next Player'">
-                       </span>
-                        <span ng-if="$ctrl.isLastPlayer() || !$ctrl.getActiveIndices().length"
-                              ng-bind="'Next Round'">
-                       </span>
-                    </button>
+                    <div ng-if="!$ctrl.isLastPlayer() && $ctrl.getActiveIndices().length">
+                        <button ng-disabled="$ctrl.isLoadingNextPlayer"
+                                ng-click="$ctrl.nextPlayersTurn()"
+                                class="c-btn-whiteBlue u-border-babyBlue u-fontGotham-Bold u-padding-10 u-width-100 u-fontSize-18 u-border-radius-10"
+                                ng-bind="'Next Player'">
+                        </button>
+                    </div>
+                    <div ng-if="$ctrl.isLastPlayer() || !$ctrl.getActiveIndices().length">
+                        <button ng-disabled="$ctrl.isLoadingNextPlayer"
+                                ng-click="$ctrl.nextRound()"
+                                class="c-btn-whiteBlue u-border-babyBlue u-fontGotham-Bold u-padding-10 u-width-100 u-fontSize-18 u-border-radius-10"
+                                ng-bind="'Next Round'">
+                        </button>
+                    </div>
                 </div>
-                <div class=""
-                     ng-if="$ctrl.isLastPlayerAndLastTurn() || $ctrl.isLastRoundAndNoMoreWords()">
+                <div ng-if="$ctrl.isLastPlayerAndLastTurn() || $ctrl.isLastRoundAndNoMoreWords()">
                     <button ng-bind="'New Game'"
                             ng-disabled="$ctrl.isLoadingNextPlayer"
                             ng-click="$ctrl.startNewGame($event)"

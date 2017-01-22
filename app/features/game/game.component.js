@@ -23,6 +23,7 @@
             gotIt,
             newGame,
             nextPlayersTurn,
+            nextRound,
             passWord,
             startNewGame,
             startTimer
@@ -168,6 +169,15 @@
                 roomCode: $stateParams.roomCode,
                 userName: vm.user.userName
             });
+        }
+
+        function nextRound() {
+            if (vm.isLoading) {
+                return;
+            }
+            vm.isLoadingNextPlayer = true;
+            return roomsService.nextRound(vm.user.roomId)
+                .then(() => _.set(vm, 'isLoadingNextPlayer', false));
         }
 
         function startTimer() {
