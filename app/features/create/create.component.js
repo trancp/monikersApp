@@ -26,10 +26,10 @@
 
         function createRoomSuccess(response) {
             return _createNewUser(response._id, vm.user.userName, response.roomId, true)
-                .then(() => goToRoom());
+                .then(() => goToRoom(response));
         }
 
-        function goToRoom() {
+        function goToRoom(response) {
             return $state.go('room', {
                 roomCode: response.roomCode,
                 userName: vm.user.userName

@@ -25,8 +25,8 @@
 
             roomsService
                 .joinRoom(vm.user.roomCode, vm.user.userName)
-                .then(response => _joinRoomSuccess())
-                .catch(error => _joinRoomError());
+                .then(response => _joinRoomSuccess(response))
+                .catch(error => _joinRoomError(error));
         }
 
         function _formValidation() {
@@ -37,19 +37,19 @@
             return userService.createUser(userId, userName, roomId, gameMaster);
         }
 
-        function _goToRoom() {
+        function _goToRoom(response) {
             return $state.go('room', {
                 roomCode: vm.user.roomCode,
                 userName: response.userName
             });
         }
 
-        function _joinRoomSuccess() {
+        function _joinRoomSuccess(response) {
             return _createNewUser(response._id, response.userName, response.roomId, false)
-                .then(() => _goToRoom());
+                .then(() => _goToRoom(response));
         }
 
-        function _joinRoomError() {
+        function _joinRoomError(error) {
             vm.isLoading = false;
             vm.errorMessage = error;
         }
